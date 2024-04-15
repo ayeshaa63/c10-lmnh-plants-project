@@ -33,7 +33,7 @@ jobs:
           pip install pylint
         
       - name: Run PyLint
-        run: pylint --fail-under=8 *.py
+        run: pylint --fail-under=8 "*/*.py"
 
   # Workflow "test"
   test:
@@ -57,5 +57,5 @@ jobs:
           pip install pytest
 
       - name: Run PyTest
-        run: pytest -name "test-*.py"
+        run: pytest -name "*/test-*.py"
         
