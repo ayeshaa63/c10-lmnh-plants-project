@@ -1,9 +1,12 @@
-"A script that will clean and process the Dataframe passed into it. It will output a Dataframe."
+"""A script that will clean and process the Dataframe passed into it. 
+It will output a Dataframe."""
+
+import pandas as pd
 
 
-def transform():
+def transform() -> pd.Dataframe:
     """main transforming function"""
-    pass
+    return None
 
 
 if __name__ == "__main__":
