@@ -13,10 +13,10 @@ on:
 jobs:
   # Workflow "lint"
   lint:
-    name: "Code-Linting"
+    name: "Pylinting"
     runs-on: ubuntu-latest
     steps:
-      - name: Initialise PyLint
+      - name: PyLint Init Msg
         run: 'echo "Pylint in progress..."'
 
       - name: Clone the repo
@@ -33,4 +33,29 @@ jobs:
           pip install pylint
         
       - name: Run PyLint
-        run: pylint
+        run: pylint --fail-under=8 *.py
+
+  # Workflow "test"
+  test:
+    name: "Pytesting"
+    runs-on: ubuntu-latest
+    steps:
+      - name: PyTest Init Msg
+        run: 'echo "Pytest in progress..."'
+
+      - name: Clone the repo
+        uses: actions/checkout@v4
+        
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+
+      - name: Run PyTest
+        run: pytest -name "test-*.py"
+        
