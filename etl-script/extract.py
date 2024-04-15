@@ -2,6 +2,7 @@
 
 
 def extract():
+    """main extraction function"""
     pass
 
 
