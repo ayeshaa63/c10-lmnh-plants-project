@@ -29,7 +29,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd etl-script
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
         
       - name: Run PyLint
@@ -53,7 +53,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd etl-script
+          python -m pip install --upgrade pip
           pip install pytest
 
       - name: Run PyTest
