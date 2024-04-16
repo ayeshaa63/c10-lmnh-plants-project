@@ -10,7 +10,7 @@ NO_OF_PLANTS = 51
 def get_plant_data(plant_id: int) -> pd.DataFrame:
     '''Extracts json data from API endpoint for given plant id.'''
     response = requests.get(
-        f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}")
+        f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}", timeout=5)
 
     plant = response.json()
 
