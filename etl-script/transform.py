@@ -4,7 +4,6 @@ It will output a Dataframe."""
 import re
 import pandas as pd
 
-
 def get_phone_number(number: str) -> str:
     """Changes phone numbers so they only have digits and brackets"""
     return re.sub(r'[^0-9()]', '', number)

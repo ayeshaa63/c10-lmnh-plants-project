@@ -1,3 +1,6 @@
 pandas
 requests
 pytest
+pylint
+pytest-mock
+requests-mock

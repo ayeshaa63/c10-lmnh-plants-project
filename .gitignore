@@ -1,10 +1,12 @@
 .venv
+venv
 .env
 .terraform
 /venv
 test_data.py
 .coverage
-/__pycache__/
-__pycache__/
 *.ipynb
 *.json
+__pycache__
+
+
