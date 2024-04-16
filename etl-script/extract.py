@@ -4,8 +4,6 @@ The data should then be returned as a Dataframe."""
 import pandas as pd
 import requests
 
-NO_OF_PLANTS = 60
-
 
 def get_plant_data(plant_id: int) -> pd.DataFrame:
     '''Extracts json data from API endpoint for given plant id.'''
@@ -22,11 +20,11 @@ def get_plant_data(plant_id: int) -> pd.DataFrame:
         return {'error': 'Cannot connect to the API.'}
 
 
-def get_dataframe() -> pd.DataFrame:
+def get_dataframe(no_of_plants: int) -> pd.DataFrame:
     '''Puts all plant information into a dataframe.'''
     plants = []
 
-    for i in range(1, 10):
+    for i in range(no_of_plants):
         plant = get_plant_data(i)
         plants.append(plant)
 
@@ -35,4 +33,4 @@ def get_dataframe() -> pd.DataFrame:
 
 if __name__ == "__main__":
 
-    get_dataframe()
+    get_dataframe(51)
