@@ -1,3 +1,6 @@
 .venv
+venv
 .env
 .terraform
+ __pycache__/
+ notebook.ipynb
