@@ -5,9 +5,9 @@ import re
 import pandas as pd
 
 
-def get_phone_number(num):
+def get_phone_number(number: str) -> str:
     """Changes phone numbers so they only have digits and brackets"""
-    return re.sub(r'[^0-9()]', '', num)
+    return re.sub(r'[^0-9()]', '', number)
 
 
 def recording_information(plant: dict) -> dict:
@@ -51,7 +51,6 @@ def recording_information(plant: dict) -> dict:
         "temp": temp
     }
 
-    print(df_row)
     return df_row
 
 
@@ -77,7 +76,12 @@ def transform(plants: list[dict]) -> pd.DataFrame:
 
     rows = []
     for plant in plants:
+        if plant.get('error'):
+            continue
         rows.append(recording_information(plant))
+
     plant_df = pd.DataFrame(rows)
-    plant_df = clean(plant_df)
+
+    if rows:
+        plant_df = clean(plant_df)
     return plant_df

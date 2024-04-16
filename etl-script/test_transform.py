@@ -78,9 +78,20 @@ def test_transform(test_single_full_json,
 
     actual_outcome = transform([test_single_full_json])
 
-    print(expected_outcome.head())
-    print(actual_outcome.head())
-
     assert isinstance(actual_outcome, pd.DataFrame)
     assert isinstance(expected_outcome, pd.DataFrame)
     assert_frame_equal(actual_outcome, expected_outcome)
+
+
+def test_transform_empty():
+    actual_outcome = transform([])
+
+    assert isinstance(actual_outcome, pd.DataFrame)
+
+
+def test_transform_error(test_single_full_json, ):
+    actual_outcome = transform(
+        [{'error': 'Cannot connect to the API.'}, test_single_full_json])
+
+    assert isinstance(actual_outcome, pd.DataFrame)
+    assert len(actual_outcome.index) == 1
