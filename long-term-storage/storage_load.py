@@ -7,10 +7,10 @@ from os import environ as ENV
 from boto3 import client
 from dotenv import load_dotenv
 import pandas as pd
-from pymssql import connect
+from pymssql import connect, Connection
 
 
-def connect_to_db(config):
+def connect_to_db(config) -> Connection:
     """Connects to the short-term plants database."""
     return connect(
         server=config["DB_HOST"],
@@ -22,10 +22,15 @@ def connect_to_db(config):
     )
 
 
-def get_recent_entries() -> None:
+def get_recent_entries(conn: Connection) -> None:
     """Goes into database, and pulls all entries in the plant table which have
     a recording older than 24 hours. Returns a CSV file."""
-    pass
+    with conn.cursor() as cur:
+        cur.execute("""SELECT p.* FROM s_alpha.plant AS p
+                    JOIN s_alpha.recordings AS r
+                    ON (r.plant_id = p.plant_id)
+                    WHERE DATEDIFF(hour, CURRENT_TIMESTAMP, r.timestamp) > 24;""")
+        print(cur.fetchall())
 
 
 def load_csv_file() -> None:
@@ -44,4 +49,4 @@ if __name__ == "__main__":
 
     conn = connect_to_db(ENV)
 
-    print(conn)
+    print(get_recent_entries(conn))

@@ -1,3 +1,5 @@
 boto3
 pandas
+pytest
 python-dotenv
+pylint
