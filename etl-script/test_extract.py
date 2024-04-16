@@ -12,6 +12,6 @@ def test_get_valid_dataframe(fake_get_plant, test_plant):
     fake_get_plant.return_value = test_plant
     fake_get_plant.status_code = 200
 
-    plant = get_dataframe()
+    plant = get_dataframe(60)
 
     assert isinstance(plant, pd.DataFrame) is True
