@@ -65,7 +65,8 @@ def test_transform(test_single_full_json,
     expected_outcome = test_expected_outcome_full_single
     expected_outcome['phone'] = '(146)994163535992'
 
-    expected_outcome = pd.DataFrame(expected_outcome)
+    expected_outcome = pd.DataFrame([expected_outcome])
+    expected_outcome['last_watered'] = expected_outcome['last_watered'].str.strip()
     expected_outcome['last_watered'] = pd.to_datetime(
         expected_outcome['last_watered'], format='%a, %d %b %Y %H:%M:%S %Z')
     expected_outcome['last_watered'] = expected_outcome['last_watered'].dt.tz_localize(
@@ -75,7 +76,10 @@ def test_transform(test_single_full_json,
     expected_outcome['timestamp'] = pd.to_datetime(
         expected_outcome['timestamp'])
 
-    actual_outcome = transform(test_single_full_json)
+    actual_outcome = transform([test_single_full_json])
+
+    print(expected_outcome.head())
+    print(actual_outcome.head())
 
     assert isinstance(actual_outcome, pd.DataFrame)
     assert isinstance(expected_outcome, pd.DataFrame)

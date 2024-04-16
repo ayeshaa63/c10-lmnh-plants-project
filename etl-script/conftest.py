@@ -23,6 +23,7 @@ def test_single_full_json():
             'temperature': 22.187149686325654}
 
 
+@pytest.fixture
 def test_single_record_no_image_scientific_name():
     """a single plant record but with no image or scientific name"""
     return {'botanist':
@@ -35,6 +36,7 @@ def test_single_record_no_image_scientific_name():
             'temperature': 22.187149686325654}
 
 
+@pytest.fixture
 def test_expected_outcome_full_single():
     """The expected output of the full plant record"""
     return {'email': 'carl.linnaeus@lnhm.co.uk',
