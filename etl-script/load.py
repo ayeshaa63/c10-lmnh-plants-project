@@ -1,4 +1,4 @@
-"""Take the Dataframe returned from transform.py and 
+"""Take the Dataframe returned from transform.py and
 upload it to a Microsoft SQL Server database."""
 
 from dotenv import load_dotenv
@@ -7,35 +7,38 @@ import pandas as pd
 from pymssql import connect, Connection
 
 
-def connect_to_db(config) -> Connection:
-    """Return a connection to redshift database using environment variables."""
+def connect_to_db(config):
+    """Returns a live database connection."""
     return connect(
-        server=config['DB_HOST'],
-        database=config['DB_NAME'],
-        user=config['DB_USER'],
-        password=config['DB_PASS'],
-        port=config['DB_PORT'],
+        server=config["DB_HOST"],
+        user=config["DB_USER"],
+        password=config["DB_PASS"],
+        database=config["DB_NAME"],
+        port=config["DB_PORT"],
         as_dict=True
     )
 
 
-def get_botanist_ids(df: pd.DataFrame, conn: Connection) -> pd.DataFrame:
+def get_botanist_ids(df: pd.DataFrame, conn: Connection, config) -> pd.DataFrame:
     """Look through botanist data in database:
      - If botanist doesn't exist, add them to database and get id,
      - If botanist does already exist, get their id as appear in table.
      Replace botanist columns in DataFrame to a column of ids."""
-    botanists = df[['name', 'phone', 'email']].unique()
-
-    with conn.cursor as cur:
-        for botanist in botanists:
+    botanists = df[['name', 'phone', 'email']].drop_duplicates()
+    with conn.cursor() as cur:
+        for _, botanist in botanists.iterrows():
             cur.execute(
-                f"""SELECT * from botanists 
-                WHERE name={botanist['name']} 
-                AND phone={botanist['phone']} 
-                AND email={botanist['email']}""")
-            info = cur.fetchall()
-            conn.commit()
-            print(info)
+                f"""SELECT * from {config['SCHEMA_NAME']}.botanist
+                    WHERE name='{botanist.iloc[0]}'
+                    AND phone='{botanist.iloc[1]}'
+                    AND email='{botanist.iloc[2]}'""")
+            botanist_info = cur.fetchall()
+            if not botanist_info:
+                cur.execute(
+                    f"""INSERT INTO {config['SCHEMA_NAME']}.botanist
+                        (name, phone, email) VALUES
+                        ('{botanist.iloc[0]}', '{botanist.iloc[1]}', '{botanist.iloc[2]}')""")
+                conn.commit()
 
 
 def upload_watering_data(df: pd.DataFrame, conn: Connection):
@@ -54,14 +57,15 @@ def upload_recordings_data(df: pd.DataFrame, conn: Connection):
     conn.commit()
 
 
-def load(df=pd.DataFrame) -> None:
+def load(df: pd.DataFrame) -> None:
     """main load function"""
     with connect_to_db(ENV) as conn:
-        df = get_botanist_ids(df, conn)
+        df = get_botanist_ids(df, conn, ENV)
         upload_watering_data(df, conn)
         upload_recordings_data(df, conn)
 
 
 if __name__ == "__main__":
     load_dotenv()
-    load()
+    load(pd.DataFrame({'name': ['mickey', 'mickey', 'mouse'], 'phone': [
+         '839429', '839429', '4872682'], 'email': ['mickeymouse@clubhouse.com', 'mickeymouse@clubhouse.com', 'anemail@email.com']}))
