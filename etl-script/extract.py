@@ -4,26 +4,30 @@ The data should then be returned as a Dataframe."""
 import pandas as pd
 import requests
 
+NO_OF_PLANTS = 51
 
-def extract(plant_range: int) -> list:
 
+def get_plant_data(plant_id: int) -> pd.DataFrame:
+    '''Extracts json data from API endpoint for given plant id.'''
+    response = requests.get(
+        f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}")
+
+    plant = response.json()
+
+    return plant
+
+
+def get_dataframe() -> pd.DataFrame:
+    '''Puts all plant information into a dataframe.'''
     plants = []
 
-    for i in range(plant_range):
-        response = requests.get(
-            f"https://data-eng-plants-api.herokuapp.com/plants/{i}")
-
-        plant = response.json()
-
+    for i in range(NO_OF_PLANTS):
+        plant = get_plant_data(i)
         plants.append(plant)
 
-    return plants
-
-
-def to_dataframe():
-    pass
+    return pd.DataFrame.from_dict(plants)
 
 
 if __name__ == "__main__":
 
-    print(extract())
+    get_dataframe()
