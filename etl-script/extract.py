@@ -35,4 +35,4 @@ def get_dataframe() -> pd.DataFrame:
 
 if __name__ == "__main__":
 
-    print(get_dataframe())
+    get_dataframe()
