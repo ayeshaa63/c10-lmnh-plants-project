@@ -1,3 +1,7 @@
 #### How to use
 
-Run the command `bash connect.sh schema.sql`
+First install:
+`brew install sqlcmd`
+
+Then run the command:
+`bash connect.sh schema.sql`
