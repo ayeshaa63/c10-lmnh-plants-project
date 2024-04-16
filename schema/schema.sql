@@ -1,17 +1,17 @@
-DROP TABLE s_alpha.continent; GO
-DROP TABLE s_alpha.country; GO
-DROP TABLE s_alpha.origin; GO
-DROP TABLE s_alpha.plant; GO
-DROP TABLE s_alpha.botanist; GO
-DROP TABLE s_alpha.image; GO
-DROP TABLE s_alpha.recording; GO
-DROP TABLE s_alpha.watering; GO
+DROP TABLE IF EXISTS s_alpha.watering;
+DROP TABLE IF EXISTS s_alpha.recording;
+DROP TABLE IF EXISTS s_alpha.image;
+DROP TABLE IF EXISTS s_alpha.botanist;
+DROP TABLE IF EXISTS s_alpha.plant;
+DROP TABLE IF EXISTS s_alpha.origin;
+DROP TABLE IF EXISTS s_alpha.country;
+DROP TABLE IF EXISTS s_alpha.continent;
 
 CREATE TABLE s_alpha.continent(
     continent_id TINYINT IDENTITY(1,1) PRIMARY KEY,
     name VARCHAR(13)
 );
-GO
+
 
 CREATE TABLE s_alpha.country(
     country_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
@@ -19,7 +19,7 @@ CREATE TABLE s_alpha.country(
     continent_id TINYINT NOT NULL,
     FOREIGN KEY(continent_id) REFERENCES s_alpha.continent(continent_id)
 );
-GO
+
 
 CREATE TABLE s_alpha.origin(
     origin_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
@@ -29,7 +29,7 @@ CREATE TABLE s_alpha.origin(
     country_id SMALLINT NOT NULL,
     FOREIGN KEY(country_id) REFERENCES s_alpha.country(country_id)
 );
-GO
+
 
 CREATE TABLE s_alpha.plant(
     plant_id SMALLINT UNIQUE NOT NULL,
@@ -38,15 +38,15 @@ CREATE TABLE s_alpha.plant(
     origin_id SMALLINT,
     FOREIGN KEY(origin_id) REFERENCES s_alpha.origin(origin_id)
 );
-GO
+
 
 CREATE TABLE s_alpha.botanist(
     botanist_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
     name VARCHAR(30) NOT NULL,
     email VARCHAR(30) NOT NULL,
-    phone VARCHAR(15) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
 );
-GO
+
 
 CREATE TABLE s_alpha.image(
     image_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -57,7 +57,7 @@ CREATE TABLE s_alpha.image(
     plant_id SMALLINT NOT NULL,
     FOREIGN KEY(plant_id) REFERENCES s_alpha.plant(plant_id)
 );
-GO
+
 
 CREATE TABLE s_alpha.recording(
     recording_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -69,7 +69,7 @@ CREATE TABLE s_alpha.recording(
     FOREIGN KEY(botanist_id) REFERENCES s_alpha.botanist(botanist_id),
     FOREIGN KEY(plant_id) REFERENCES s_alpha.plant(plant_id)
 );
-GO
+
 
 CREATE TABLE s_alpha.watering(
     watering_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -77,4 +77,4 @@ CREATE TABLE s_alpha.watering(
     plant_id SMALLINT NOT NULL,
     FOREIGN KEY(plant_id) REFERENCES s_alpha.plant(plant_id)
 );
-GO
+
