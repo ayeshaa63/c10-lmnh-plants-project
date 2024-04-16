@@ -1,10 +1,10 @@
 """Take the Dataframe returned from transform.py and
 upload it to a Microsoft SQL Server database."""
 
-from dotenv import load_dotenv
-from os import environ as ENV
 import pandas as pd
 from pymssql import connect, Connection
+from os import environ as ENV
+from dotenv import load_dotenv
 
 
 def connect_to_db(config):
