@@ -4,7 +4,7 @@ upload it to a Microsoft SQL Server database."""
 
 def load() -> None:
     """main load function"""
-    pass
+    return None
 
 
 if __name__ == "__main__":

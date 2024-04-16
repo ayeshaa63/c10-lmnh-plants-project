@@ -4,7 +4,7 @@ It will output a Dataframe."""
 import pandas as pd
 
 
-def transform() -> pd.Dataframe:
+def transform() -> pd.DataFrame:
     """main transforming function"""
     return None
 
