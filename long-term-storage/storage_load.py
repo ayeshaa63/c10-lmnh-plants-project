@@ -1,11 +1,47 @@
-"""This script is to extract and delete the out-of-date data 
-from the database and puts it into long-term storage in an S3 bucket. The output file format will be a CSV."""
+"""
+This script is to extract and remove the out-of-date data from the database 
+ it into long-term storage in an S3 bucket.
+"""
+from os import environ as ENV
+
+from boto3 import client
+from dotenv import load_dotenv
+import pandas as pd
+from pymssql import connect
+
+
+def connect_to_db(config):
+    """Connects to the short-term plants database."""
+    return connect(
+        server=config["DB_HOST"],
+        user=config["DB_USER"],
+        password=config["DB_PASSWORD"],
+        database=config["DB_NAME"],
+        port=config["DB_PORT"],
+        as_dict=True
+    )
+
+
+def get_recent_entries() -> None:
+    """Goes into database, and pulls all entries in the plant table which have
+    a recording older than 24 hours. Returns a CSV file."""
+    pass
+
+
+def load_csv_file() -> None:
+    """Given our recent entries, we now connect to an S3 bucket and load."""
+    pass
 
 
 def storage_load():
-    """main storage load function"""
-    return None
+    """To be solely run when executing this Python script."""
+    pass
 
 
 if __name__ == "__main__":
-    storage_load()
+
+    load_dotenv()
+
+    conn = connect_to_db(ENV)
+
+    print(conn)
