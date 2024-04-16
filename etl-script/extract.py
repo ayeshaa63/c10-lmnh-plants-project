@@ -20,7 +20,7 @@ def get_plant_data(plant_id: int) -> pd.DataFrame:
         return {'error': 'Cannot connect to the API.'}
 
 
-def get_all_plants(no_of_plants: int) -> list:
+def get_all_plants(no_of_plants: int) -> list[dict]:
     '''Puts all plant information into a dataframe.'''
     plants = []
 
