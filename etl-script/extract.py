@@ -3,6 +3,7 @@ The data should then be returned as a Dataframe."""
 
 import pandas as pd
 import requests
+import multiprocessing
 
 
 def get_plant_data(plant_id: int) -> pd.DataFrame:
@@ -10,25 +11,24 @@ def get_plant_data(plant_id: int) -> pd.DataFrame:
 
     try:
         response = requests.get(
-            f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}", timeout=5)
+            f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}", timeout=10)
 
         plant = response.json()
 
         return plant
 
-    except Exception:
-        return {'error': 'Cannot connect to the API.'}
+    except Exception as e:
+        return {'error': 'Cannot connect to the API.',
+                'exception': e}
 
 
 def get_all_plants(no_of_plants: int) -> list[dict]:
-    '''Puts all plant information into a dataframe.'''
-    plants = []
+    '''Returns a list of plants along with their data.'''
+    pool_obj = multiprocessing.Pool()
 
-    for i in range(no_of_plants):
-        plant = get_plant_data(i)
-        plants.append(plant)
-
-    return plants
+    with pool_obj as p:
+        ans = p.map(get_plant_data, range(0, no_of_plants))
+        return ans
 
 
 if __name__ == "__main__":
