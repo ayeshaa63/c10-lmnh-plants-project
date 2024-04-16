@@ -1,4 +1,6 @@
 pandas
+python-dotenv
+pymssql
 requests
 pytest
 pylint

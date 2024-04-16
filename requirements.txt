@@ -1,7 +1,8 @@
 pandas
+python-dotenv
+pymssql
 requests
 pytest
 pylint
 pytest-mock
 requests-mock
-
