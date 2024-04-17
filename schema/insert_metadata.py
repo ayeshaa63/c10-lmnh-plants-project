@@ -1,7 +1,9 @@
+"""A script to insert all metadata into the database"""
+from os import environ as ENV
+
 import pandas as pd
 import requests
 from pymssql import connect, Connection
-from os import environ as ENV
 from dotenv import load_dotenv
 
 
@@ -19,14 +21,10 @@ def connect_to_db(config):
 
 def get_plant_data(plant_id: int) -> pd.DataFrame:
     """Extracts json data from API endpoint for given plant id."""
-    try:
-        response = requests.get(
-            f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}", timeout=5)
-        plant = response.json()
-        return plant
-
-    except Exception:
-        return {'error': 'Cannot connect to the API.'}
+    response = requests.get(
+        f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}", timeout=5)
+    plant = response.json()
+    return plant
 
 
 def get_all_plants(no_of_plants: int) -> list[dict]:
@@ -38,7 +36,7 @@ def get_all_plants(no_of_plants: int) -> list[dict]:
     return plants
 
 
-def insert_continent(continent, conn, config):
+def insert_continent(continent: str, conn: Connection, config):
     """Insert data into the continent table of the database,
     if it doesn't already exist.
     Return the continent id."""
@@ -60,7 +58,7 @@ def insert_continent(continent, conn, config):
     return continent_id['continent_id']
 
 
-def insert_country(country, continent_id, conn, config):
+def insert_country(country: str, continent_id: int, conn, config):
     """Insert data into the country table of the database,
     if it doesn't already exist.
     Return the country id."""
@@ -118,7 +116,7 @@ def insert_origin(origin: list, conn: Connection, config):
     return origin_id['origin_id']
 
 
-def insert_plant(data: dict, conn: Connection, config, origin_id):
+def insert_plant(data: dict, conn: Connection, config, origin_id: int):
     """Insert data for a plant into the plant table of the database."""
     plant_id = data['plant_id']
     name = data['name'].replace('\'', '\"')
@@ -136,7 +134,7 @@ def insert_plant(data: dict, conn: Connection, config, origin_id):
 
 def insert_images():
     """Insert data about the images of a plant if exists and upload to database."""
-    pass
+    return None
 
 
 def insert_botanist(botanist: dict, conn: Connection, config) -> None:
@@ -155,7 +153,7 @@ def insert_botanist(botanist: dict, conn: Connection, config) -> None:
             conn.commit()
 
 
-def insert_plant_data(plant_dict: dict, conn, config):
+def insert_plant_data(plant_dict: dict, conn: Connection, config):
     """Insert data into all relevant tables of the database for a single plant."""
     print(plant_dict['plant_id'])
     origin_id = insert_origin(plant_dict['origin_location'], conn, config)
