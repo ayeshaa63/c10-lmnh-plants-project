@@ -1,5 +1,6 @@
 boto3
 pandas
+pymssql
 pytest
 python-dotenv
 pylint
