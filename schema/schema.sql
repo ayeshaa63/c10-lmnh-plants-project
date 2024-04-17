@@ -32,7 +32,7 @@ CREATE TABLE s_alpha.origin(
 
 
 CREATE TABLE s_alpha.plant(
-    plant_id SMALLINT UNIQUE NOT NULL,
+    plant_id SMALLINT NOT NULL PRIMARY KEY,
     name VARCHAR(40) NOT NULL,
     scientific_name VARCHAR(40),
     origin_id SMALLINT,
@@ -61,7 +61,7 @@ CREATE TABLE s_alpha.image(
 
 CREATE TABLE s_alpha.recording(
     recording_id INT IDENTITY(1,1) PRIMARY KEY,
-    timestamp DATETIME NOT NULL,
+    timestamp SMALLDATETIME NOT NULL,
     temp FLOAT,
     soil_moisture FLOAT,
     botanist_id SMALLINT NOT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE s_alpha.recording(
 
 CREATE TABLE s_alpha.watering(
     watering_id INT IDENTITY(1,1) PRIMARY KEY,
-    timestamp DATETIME NOT NULL,
+    timestamp SMALLDATETIME NOT NULL,
     plant_id SMALLINT NOT NULL,
     FOREIGN KEY(plant_id) REFERENCES s_alpha.plant(plant_id)
 );

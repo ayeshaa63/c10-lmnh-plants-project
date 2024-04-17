@@ -123,7 +123,7 @@ def upload_recordings_data(df: pd.DataFrame, conn: Connection, config, bad_plant
 
 
 def load(df: pd.DataFrame, config) -> None:
-    """main load function"""
+    """Load new records into database."""
     with connect_to_db(config) as conn:
         bad_plants = check_plants(df, conn, config)
         df = get_botanist_ids(df, conn, config)

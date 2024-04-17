@@ -1,8 +1,7 @@
 """A script to insert all metadata into the database"""
+import aiohttp
+import asyncio
 from os import environ as ENV
-
-import pandas as pd
-import requests
 from pymssql import connect, Connection
 from dotenv import load_dotenv
 
@@ -19,21 +18,34 @@ def connect_to_db(config):
     )
 
 
-def get_plant_data(plant_id: int) -> pd.DataFrame:
-    """Extracts json data from API endpoint for given plant id."""
-    response = requests.get(
-        f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}", timeout=5)
-    plant = response.json()
-    return plant
+async def get_plant_data(session, plant_id: int) -> dict:
+    '''Extracts json data from API endpoint for given plant id.'''
+
+    try:
+        response = await session.get(
+            f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}", timeout=20)
+
+        data = await response.json()
+
+        data['plant_id'] = plant_id
+
+        return data
+
+    except Exception as e:
+        return {'error': 'Cannot connect to the API.',
+                'exception': e, 'plant_id': plant_id}
 
 
-def get_all_plants(no_of_plants: int) -> list[dict]:
-    """Puts all plant information into a dataframe."""
-    plants = []
-    for i in range(no_of_plants):
-        plant = get_plant_data(i)
-        plants.append(plant)
-    return plants
+async def get_all_plants(no_of_plants: int) -> list[dict]:
+    '''Returns a list of plants along with their data.'''
+
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+
+        for i in range(no_of_plants):
+            tasks.append(get_plant_data(session, i))
+
+        return await asyncio.gather(*tasks, return_exceptions=True)
 
 
 def insert_continent(continent: str, conn: Connection, config):
@@ -155,7 +167,6 @@ def insert_botanist(botanist: dict, conn: Connection, config) -> None:
 
 def insert_plant_data(plant_dict: dict, conn: Connection, config):
     """Insert data into all relevant tables of the database for a single plant."""
-    print(plant_dict['plant_id'])
     origin_id = insert_origin(plant_dict['origin_location'], conn, config)
     insert_plant(plant_dict, conn, config, origin_id)
     insert_images()
@@ -172,4 +183,4 @@ def insert_metadata(data: list[dict], config):
 
 if __name__ == "__main__":
     load_dotenv()
-    insert_metadata(get_all_plants(51), ENV)
+    insert_metadata(asyncio.run(get_all_plants(51)), ENV)
