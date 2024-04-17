@@ -50,6 +50,7 @@ def test_recording_information_missing_image_and_sname():
                         'origin_url': None,
                         'last_watered': 'Mon, 15 Apr 2024 14:03:04 GMT',
                         'plant_id': 0,
+                        "plant_name": 'Epipremnum Aureum',
                         'timestamp': '2024-04-16 08:22:43',
                         'scientific_name': None,
                         'soil_moisture': 36.12849992449178,

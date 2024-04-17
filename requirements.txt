@@ -6,3 +6,4 @@ pylint
 pytest-mock
 requests-mock
 aiohttp
+boto3
