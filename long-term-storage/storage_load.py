@@ -54,71 +54,71 @@ def del_recent_recordings(conn: Connection, current_timestamp: datetime, config)
     cur.close()
 
 
-def find_row_index_most_sim(df: pd.DataFrame) -> int:
-    """Given a dataframe with temp and soil_moisture columns, it finds the row index 
-    of the row which is the closest match to the means of temp and soil_moisture."""
-    df_temp_mean = df["temp"].mean()
-    df_soil_mean = df["soil_moisture"].mean()
+# def find_row_index_most_sim(df: pd.DataFrame) -> int:
+#     """Given a dataframe with temp and soil_moisture columns, it finds the row index
+#     of the row which is the closest match to the means of temp and soil_moisture."""
+#     df_temp_mean = df["temp"].mean()
+#     df_soil_mean = df["soil_moisture"].mean()
 
-    # We rank temperature and soil moisture based on how close they are to their
-    # respective means.
-    df_rank = df
-    df_rank["temp"] = df_rank["temp"].sub(
-        df_temp_mean).abs().apply(pd.Series.rank).astype(int)
-    df_rank["soil_moisture"] = df_rank["soil_moisture"].sub(
-        df_soil_mean).abs().apply(pd.Series.rank).astype(int)
+#     # We rank temperature and soil moisture based on how close they are to their
+#     # respective means.
+#     df_rank = df
+#     df_rank["temp"] = df_rank["temp"].sub(
+#         df_temp_mean).abs().apply(pd.Series.rank).astype(int)
+#     df_rank["soil_moisture"] = df_rank["soil_moisture"].sub(
+#         df_soil_mean).abs().apply(pd.Series.rank).astype(int)
 
-    # Finally, we sum up the ranks for each column, and the row with
-    # the least rank sum is our most similar row!
-    df_rank["rank_sum"] = df_rank[[
-        "temp", "soil_moisture"]].sum(axis=1)
-    i = df_rank["rank_sum"].min().index
+#     # Finally, we sum up the ranks for each column, and the row with
+#     # the least rank sum is our most similar row!
+#     df_rank["rank_sum"] = df_rank[[
+#         "temp", "soil_moisture"]].sum(axis=1)
+#     i = df_rank["rank_sum"].min().index
 
-    return i
+#     return i
 
 
-def remove_sim_soil_moist_temp_values(df: pd.DataFrame) -> pd.DataFrame:
-    """Looks into the input dataframe, and for each plant, drops all soil moisture and
-    temperature values that are non-outliers (ie. within 2 sample SDs)."""
+# def remove_sim_soil_moist_temp_values(df: pd.DataFrame) -> pd.DataFrame:
+#     """Looks into the input dataframe, and for each plant, drops all soil moisture and
+#     temperature values that are non-outliers (ie. within 2 sample SDs)."""
 
-    plant_id_list = df["plant_id"].unique().tolist()
+#     plant_id_list = df["plant_id"].unique().tolist()
 
-    for plant_id in plant_id_list:
-        df_id = df[df["plant_id"] == plant_id][["temp", "soil_moisture"]]
-        # We firstly find what recording in the series has the closest value to the
-        # mean of the temp and soil moisture, and then find the index of the row most
-        # closely resembling the means of temp and soil moisture.
-        df_id_temp_mean = df_id["temp"].mean()
-        df_id_soil_mean = df_id["soil_moisture"].mean()
-        most_sim_row_index = find_row_index_most_sim(df_id)
-        df_id_sim_row = df_id.iloc[most_sim_row_index]
+#     for plant_id in plant_id_list:
+#         df_id = df[df["plant_id"] == plant_id][["temp", "soil_moisture"]]
+#         # We firstly find what recording in the series has the closest value to the
+#         # mean of the temp and soil moisture, and then find the index of the row most
+#         # closely resembling the means of temp and soil moisture.
+#         df_id_temp_mean = df_id["temp"].mean
+#         df_id_soil_mean = df_id["soil_moisture"].mean
+#         most_sim_row_index = find_row_index_most_sim(df_id)
+#         df_id_sim_row = df_id.iloc[most_sim_row_index]
 
-        # We remove all non-outlier values in temp and soil moisture.
-        temp_lower = df_id_temp_mean - 2 * df_id["temp"].std(ddof=0)
-        temp_upper = df_id_temp_mean + 2 * df_id["temp"].std(ddof=0)
-        df_id = df_id.drop(df_id[df_id["temp"] > temp_lower &
-                                 df_id["temp"] < temp_upper])
+#         # We remove all non-outlier values in temp and soil moisture.
+#         temp_lower = df_id_temp_mean - 2 * df_id["temp"].std(ddof=0)
+#         temp_upper = df_id_temp_mean + 2 * df_id["temp"].std(ddof=0)
+#         df_id = df_id.drop(df_id[df_id["temp"] > temp_lower &
+#                                  df_id["temp"] < temp_upper])
 
-        soil_lower = df_id_soil_mean - 2 * df_id["soil_moisture"].std(ddof=0)
-        soil_upper = df_id_soil_mean + 2 * df_id["soil_moisture"].std(ddof=0)
-        df_id = df_id.drop(df_id[df_id["soil_moisture"] > soil_lower
-                           & df_id["soil_moisture"] < soil_upper])
+#         soil_lower = df_id_soil_mean - 2 * df_id["soil_moisture"].std(ddof=0)
+#         soil_upper = df_id_soil_mean + 2 * df_id["soil_moisture"].std(ddof=0)
+#         df_id = df_id.drop(df_id[df_id["soil_moisture"] > soil_lower
+#                            & df_id["soil_moisture"] < soil_upper])
 
-        # We finally append the most similar row back into the resultant dataframe.
-        df_id = df_id.append(df_id_sim_row, ignore_index=True)
+#         # We finally append the most similar row back into the resultant dataframe.
+#         df_id = df_id.append(df_id_sim_row, ignore_index=True)
 
-        df[df["plant_id"] == plant_id] = df_id
+#         df[df["plant_id"] == plant_id] = df_id
 
-    return df
+#     return df
 
 
 def create_current_datetime_filename(current_timestamp: datetime) -> str:
     """Given the current timestamp, a CSV filename is created."""
-    current_yr = current_timestamp.year()
-    current_mth = current_timestamp.month()
-    current_day = current_timestamp.day()
-    current_hr = current_timestamp.hour()
-    current_min = current_timestamp.minute()
+    current_yr = current_timestamp.year
+    current_mth = current_timestamp.month
+    current_day = current_timestamp.day
+    current_hr = current_timestamp.hour
+    current_min = current_timestamp.minute
 
     return f"{current_yr}/{current_mth}/{current_day}/{current_hr}:{current_min}"
 
@@ -147,11 +147,9 @@ if __name__ == "__main__":
 
     del_recent_recordings(conn, current_timestamp, ENV)
 
-    recordings_df = remove_sim_soil_moist_temp_values(old_recordings)
-
     csv = f"{create_current_datetime_filename(current_timestamp)}.csv"
 
-    convert_data_csv_file(recordings_df, csv)
+    convert_data_csv_file(old_recordings, csv)
 
     s3 = client("s3",
                 aws_access_key_id=ENV["AWS_ACCESS_KEY_ID"],
