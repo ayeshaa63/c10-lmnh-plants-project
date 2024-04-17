@@ -1,7 +1,9 @@
-"""A script to insert all metadata into the database"""
-import aiohttp
-import asyncio
+"""A script to insert missing plant data into the database"""
+
+
 from os import environ as ENV
+
+import requests
 from pymssql import connect, Connection
 from dotenv import load_dotenv
 
@@ -18,34 +20,20 @@ def connect_to_db(config):
     )
 
 
-async def get_plant_data(session, plant_id: int) -> dict:
-    '''Extracts json data from API endpoint for given plant id.'''
+def get_plant_data(plant_id: int) -> dict:
+    """Extracts json data from API endpoint for given plant id."""
 
     try:
-        response = await session.get(
-            f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}", timeout=20)
+        response = requests.get(
+            f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}", timeout=5)
 
-        data = await response.json()
-
+        data = response.json()
         data['plant_id'] = plant_id
-
         return data
 
-    except Exception as e:
+    except Exception as err:
         return {'error': 'Cannot connect to the API.',
-                'exception': e, 'plant_id': plant_id}
-
-
-async def get_all_plants(no_of_plants: int) -> list[dict]:
-    '''Returns a list of plants along with their data.'''
-
-    async with aiohttp.ClientSession() as session:
-        tasks = []
-
-        for i in range(no_of_plants):
-            tasks.append(get_plant_data(session, i))
-
-        return await asyncio.gather(*tasks, return_exceptions=True)
+                'exception': err, 'plant_id': plant_id}
 
 
 def insert_continent(continent: str, conn: Connection, config):
@@ -173,14 +161,17 @@ def insert_plant_data(plant_dict: dict, conn: Connection, config):
     insert_botanist(plant_dict['botanist'], conn, config)
 
 
-def insert_metadata(data: list[dict], config):
-    """Insert data into the database for each and every plant"""
-    with connect_to_db(config) as conn:
-        for plant in data:
-            if 'error' not in plant:
-                insert_plant_data(plant, conn, config)
+def insert_missing_plant(plant_id, config):
+    """Insert missing plant into database from specific id."""
+    plant = get_plant_data(plant_id)
+    if plant:
+        with connect_to_db(config) as conn:
+            insert_plant_data(plant, conn, config)
+            return True
+    else:
+        return False
 
 
 if __name__ == "__main__":
     load_dotenv()
-    insert_metadata(asyncio.run(get_all_plants(51)), ENV)
+    insert_missing_plant(45, ENV)
