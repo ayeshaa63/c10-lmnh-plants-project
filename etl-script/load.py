@@ -131,6 +131,14 @@ def load(dataframe: pd.DataFrame, config) -> None:
         upload_recordings_data(dataframe, conn, config, bad_plants)
 
 
+def handler(event=None, context=None):
+    '''Lambda handler function'''
+    load_dotenv()
+    all_plants = asyncio.run(get_all_plants(51))
+    data = transform(all_plants)
+    load(data, ENV)
+
+
 if __name__ == "__main__":
     load_dotenv()
     start_time = time.time()

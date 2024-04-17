@@ -1,5 +1,9 @@
+.ipynb
+
+venv/
 .venv
 venv
+.venv
 .env
 .terraform
 /venv
