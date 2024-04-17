@@ -9,9 +9,10 @@ def test_load(fake_db_connection):
     """A test to pass the workflow checks (for now)"""
     fake_db_connection = None
     fake_db_connection.commit = None
-    fake_db_connection.cursor = None
-    fake_db_connection.cursor().execute.return_value = None
-    fake_db_connection.cursor().fetchone = {'botanist_id': 1}
+    fake_db_connection.return_value.cursor.return_value = None
+    fake_db_connection.return_value.cursor.return_value.execute.return_value = None
+    fake_db_connection.return_value.cursor.return_value.fetchone.return_value = {
+        'botanist_id': 1}
     fake_environ = {'SCHEMA_NAME': 'test_schema'}
     test_return = get_botanist_ids(pd.DataFrame({'name': ['mickey', 'mouse'], 'phone': [
         '8437234', '0-09280'], 'email': ['87324r832@gmail.com', 'mickeymouse@clubhouse.com']}), fake_db_connection, fake_environ)
