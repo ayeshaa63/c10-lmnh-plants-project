@@ -1,4 +1,9 @@
-ipykernel
 pandas
-pylint
+python-dotenv
+pymssql
 pytest
+pylint
+pytest-mock
+requests-mock
+aiohttp
+boto3

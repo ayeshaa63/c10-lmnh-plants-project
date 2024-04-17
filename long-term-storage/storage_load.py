@@ -94,6 +94,7 @@ def remove_sim_soil_moist_temp_values(df: pd.DataFrame) -> pd.DataFrame:
         df_id_soil_mean = df_id["soil_moisture"].mean()
 
         most_sim_row_index = find_row_index_most_sim(df_id)
+        df_id_sim_row = df_id.iloc[most_sim_row_index]
 
         # We remove all non-outlier values in temp and soil moisture.
         temp_lower = df_id_temp_mean - 2 * df_id["temp"].std()
@@ -106,7 +107,8 @@ def remove_sim_soil_moist_temp_values(df: pd.DataFrame) -> pd.DataFrame:
         df_id = df_id.drop(df_id[df_id["soil_moisture"] > soil_lower
                            & df_id["soil_moisture"] < soil_upper])
 
-        #
+        # We finally reimplement the most similar row back into the resultant dataframe.
+        df_id = df_id.append(df_id_sim_row, ignore_index=True)
 
         df[df["plant_id"] == plant_id] = df_id
 
