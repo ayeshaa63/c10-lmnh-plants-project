@@ -54,6 +54,36 @@ def del_recent_recordings(conn: Connection, current_timestamp: datetime, config)
     cur.close()
 
 
+def remove_sim_soil_moist_temp_values(df: pd.DataFrame) -> pd.DataFrame:
+    """Looks into the input dataframe, and for each plant, drops all soil moisture and
+    temperature values that are non-outliers (ie. within 2 sample SDs)."""
+
+    plant_id_list = df["plant_id"].unique().tolist()
+
+    for plant_id in plant_id_list:
+        df_id = df[df["plant_id"] == plant_id][["temp", "soil_moisture"]]
+        # We firstly find what recording in the series has the closest value to the
+        # mean of the temp and soil moisture.
+
+        df_id_temp_mean = df_id["temp"].mean()
+        df_id_soil_mean = df_id["soil_moisture"].mean()
+
+        # We
+        temp_lower = df_id_temp_mean - 2 * df_id["temp"].std()
+        temp_upper = df_id_temp_mean + 2 * df_id["temp"].std()
+        df_id = df_id.drop(df_id[df_id["temp"] > temp_lower &
+                                 df_id["temp"] < temp_upper])
+
+        soil_lower = df_id_soil_mean - 2 * df_id["soil_moisture"].std()
+        soil_upper = df_id_soil_mean + 2 * df_id["soil_moisture"].std()
+        df_id = df_id.drop(df_id[df_id["soil_moisture"] > soil_lower
+                           & df_id["soil_moisture"] < soil_upper])
+
+        df[df["plant_id"] == plant_id] = df_id
+
+    return df
+
+
 def create_current_datetime_filename(current_timestamp: datetime) -> str:
     """Given the current timestamp, a CSV filename is created."""
     current_yr = current_timestamp.year()
