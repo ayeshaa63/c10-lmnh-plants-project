@@ -45,28 +45,41 @@ def get_all_plants(no_of_plants: int) -> list[dict]:
 
 def insert_continent(continent, conn, config):
     with conn.cursor() as cur:
-        cur.execute(f"""INSERT INTO {config['SCHEMA_NAME']}.continent
-                    (name) VALUES
-                    ('{continent}')""")
-        conn.commit()
-        cur.execute(f"""SELECT continent_id FROM {config['SCHEMA_NAME']}.continent
+        cur.execute(
+            f"""SELECT continent_id from {config['SCHEMA_NAME']}.continent
                     WHERE name = '{continent}'
                     """)
         continent_id = cur.fetchone()
+        if not continent_id:
+            cur.execute(f"""INSERT INTO {config['SCHEMA_NAME']}.continent
+                        (name) VALUES
+                        ('{continent}')""")
+            conn.commit()
+            cur.execute(f"""SELECT continent_id FROM {config['SCHEMA_NAME']}.continent
+                        WHERE name = '{continent}'
+                        """)
+            continent_id = cur.fetchone()
     return continent_id
 
 
 def insert_country(country, continent_id, conn, config):
     with conn.cursor() as cur:
-        cur.execute(f"""INSERT INTO {config['SCHEMA_NAME']}.continent
-                    (name, continent_id) VALUES
-                    ('{country}', {continent_id})""")
-        conn.commit()
-        cur.execute(f"""SELECT continent_id FROM {config['SCHEMA_NAME']}.continent
+        cur.execute(
+            f"""SELECT country_id from {config['SCHEMA_NAME']}.country
                     WHERE name = '{country}'
-                    AND continent_id = {continent_id}
+                    AND continent_id = '{continent_id}'
                     """)
         country_id = cur.fetchone()
+        if not country_id:
+            cur.execute(f"""INSERT INTO {config['SCHEMA_NAME']}.country
+                        (name, continent_id) VALUES
+                        ('{country}', {continent_id})""")
+            conn.commit()
+            cur.execute(f"""SELECT country_id FROM {config['SCHEMA_NAME']}.country
+                        WHERE name = '{country}'
+                        AND continent_id = {continent_id}
+                        """)
+            country_id = cur.fetchone()
     return country_id
 
 
@@ -76,23 +89,40 @@ def insert_origin(origin: list, conn: Connection, config):
     continent_id = insert_continent(continent, conn, config)
     country_id = insert_country(country, continent_id, conn, config)
     with conn.cursor() as cur:
-        cur.execute(f"""INSERT INTO {config['SCHEMA_NAME']}.origin
-                    (long, lat, location_name, country_id) VALUES
-                    ({long}, {lat}, '{location}', {country_id})
-                    """)
-        conn.commit()
-        cur.execute(f"""SELECT origin_id FROM {config['SCHEMA_NAME']}.origin
+        cur.execute(
+            f"""SELECT origin_id from {config['SCHEMA_NAME']}.origin
                     WHERE long = {long}
-                    AND lat = {lat}
-                    AND location_name = '{location}'
-                    AND country_id = {country_id}
+                        AND lat = {lat}
+                        AND location_name = '{location}'
+                        AND country_id = {country_id}
                     """)
         origin_id = cur.fetchone()
+        if not origin_id:
+            cur.execute(f"""INSERT INTO {config['SCHEMA_NAME']}.origin
+                        (long, lat, location_name, country_id) VALUES
+                        ({long}, {lat}, '{location}', {country_id})
+                        """)
+            conn.commit()
+            cur.execute(f"""SELECT origin_id FROM {config['SCHEMA_NAME']}.origin
+                        WHERE long = {long}
+                        AND lat = {lat}
+                        AND location_name = '{location}'
+                        AND country_id = {country_id}
+                        """)
+            origin_id = cur.fetchone()
     return origin_id
 
 
-def insert_plant():
-    pass
+def insert_plant(data: dict, conn: Connection, config, origin_id):
+    plant_id = data['plant_id']
+    name = data['name']
+    scientific_name = data['scientific_name']
+    with conn.cursor() as cur:
+        cur.execute(f"""INSERT INTO {config['SCHEMA_NAME']}.plant
+                        (plant_id, name, scientific_name, origin_id) VALUES
+                        ({plant_id}, '{name}', '{scientific_name}', {origin_id})
+                        """)
+        conn.commit()
 
 
 def insert_images():
@@ -105,6 +135,7 @@ def insert_botanist():
 
 def insert_plant_data(plant_dict: dict, conn, config):
     origin_id = insert_origin(plant_dict['origin_location'], conn, config)
+    insert_plant(plant_dict, conn, config, origin_id)
 
 
 def insert_metadata(data, config):
