@@ -1,36 +1,43 @@
 """A script to extract data in a JSON format from several API endpoints. 
-The data should then be returned as a Dataframe."""
+The data should then be returned as a list of Dictionaries."""
 
-import pandas as pd
-import requests
+import asyncio
+import aiohttp
+import time
 
 
-def get_plant_data(plant_id: int) -> pd.DataFrame:
+async def get_plant_data(session, plant_id: int) -> dict:
     '''Extracts json data from API endpoint for given plant id.'''
 
     try:
-        response = requests.get(
-            f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}", timeout=5)
+        response = await session.get(
+            f"https://data-eng-plants-api.herokuapp.com/plants/{plant_id}", timeout=20)
 
-        plant = response.json()
+        data = await response.json()
 
-        return plant
+        data['plant_id'] = plant_id
 
-    except Exception:
-        return {'error': 'Cannot connect to the API.'}
+        return data
+
+    except Exception as e:
+        return {'error': 'Cannot connect to the API.',
+                'exception': e, 'plant_id': plant_id}
 
 
-def get_all_plants(no_of_plants: int) -> list[dict]:
-    '''Puts all plant information into a dataframe.'''
-    plants = []
+async def get_all_plants(no_of_plants: int) -> list[dict]:
+    '''Returns a list of plants along with their data.'''
 
-    for i in range(no_of_plants):
-        plant = get_plant_data(i)
-        plants.append(plant)
+    async with aiohttp.ClientSession() as session:
+        tasks = []
 
-    return plants
+        for i in range(no_of_plants):
+            tasks.append(get_plant_data(session, i))
+
+        return await asyncio.gather(*tasks, return_exceptions=True)
 
 
 if __name__ == "__main__":
 
-    get_all_plants(51)
+    start_time = time.time()
+    resp = asyncio.run(get_all_plants(51))
+    print(f"--- {(time.time() - start_time)} seconds taken ---")

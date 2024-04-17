@@ -33,8 +33,8 @@ CREATE TABLE s_alpha.origin(
 
 CREATE TABLE s_alpha.plant(
     plant_id SMALLINT UNIQUE NOT NULL,
-    name VARCHAR(30) NOT NULL,
-    scientific_name VARCHAR(30),
+    name VARCHAR(40) NOT NULL,
+    scientific_name VARCHAR(40),
     origin_id SMALLINT,
     FOREIGN KEY(origin_id) REFERENCES s_alpha.origin(origin_id)
 );
