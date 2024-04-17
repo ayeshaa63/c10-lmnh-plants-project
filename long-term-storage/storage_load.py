@@ -28,7 +28,7 @@ def get_recent_recordings(conn: Connection, current_timestamp: datetime,
     """Goes into database, and pulls all entries in the recording table with a timestamp
     older than 24 hours."""
     with conn.cursor() as cur:
-        cur.execute(f"""SELECT r.* 
+        cur.execute(f"""SELECT r.*
                     FROM {config["SCHEMA"]}.recording AS r
                     WHERE DATEDIFF(hour, %s, r.timestamp) > 24;""",
                     (current_timestamp,))
@@ -55,10 +55,8 @@ def del_recent_recordings(conn: Connection, current_timestamp: datetime, config)
 
 
 def find_row_index_most_sim(df: pd.DataFrame) -> int:
-    """Given a dataframe with temp and soil_moisture columns, it finds the row which
-    is the closest match to the means of temp and soil_moisture."""
-    # We firstly find what recording in the series has the closest value to the
-    # mean of the temp and soil moisture.
+    """Given a dataframe with temp and soil_moisture columns, it finds the row index 
+    of the row which is the closest match to the means of temp and soil_moisture."""
     df_temp_mean = df["temp"].mean()
     df_soil_mean = df["soil_moisture"].mean()
 
@@ -92,22 +90,21 @@ def remove_sim_soil_moist_temp_values(df: pd.DataFrame) -> pd.DataFrame:
         # closely resembling the means of temp and soil moisture.
         df_id_temp_mean = df_id["temp"].mean()
         df_id_soil_mean = df_id["soil_moisture"].mean()
-
         most_sim_row_index = find_row_index_most_sim(df_id)
         df_id_sim_row = df_id.iloc[most_sim_row_index]
 
         # We remove all non-outlier values in temp and soil moisture.
-        temp_lower = df_id_temp_mean - 2 * df_id["temp"].std()
-        temp_upper = df_id_temp_mean + 2 * df_id["temp"].std()
+        temp_lower = df_id_temp_mean - 2 * df_id["temp"].std(ddof=0)
+        temp_upper = df_id_temp_mean + 2 * df_id["temp"].std(ddof=0)
         df_id = df_id.drop(df_id[df_id["temp"] > temp_lower &
                                  df_id["temp"] < temp_upper])
 
-        soil_lower = df_id_soil_mean - 2 * df_id["soil_moisture"].std()
-        soil_upper = df_id_soil_mean + 2 * df_id["soil_moisture"].std()
+        soil_lower = df_id_soil_mean - 2 * df_id["soil_moisture"].std(ddof=0)
+        soil_upper = df_id_soil_mean + 2 * df_id["soil_moisture"].std(ddof=0)
         df_id = df_id.drop(df_id[df_id["soil_moisture"] > soil_lower
                            & df_id["soil_moisture"] < soil_upper])
 
-        # We finally reimplement the most similar row back into the resultant dataframe.
+        # We finally append the most similar row back into the resultant dataframe.
         df_id = df_id.append(df_id_sim_row, ignore_index=True)
 
         df[df["plant_id"] == plant_id] = df_id
@@ -127,7 +124,7 @@ def create_current_datetime_filename(current_timestamp: datetime) -> str:
 
 
 def convert_data_csv_file(data: pd.DataFrame, csv_filename: str) -> None:
-    """Given a list of dict objects, we convert it into CSV format."""
+    """Given a pd.DataFrame object, we convert it into CSV format."""
     data.to_csv(csv_filename, index=False)
 
 
@@ -146,13 +143,15 @@ if __name__ == "__main__":
 
     conn = connect_to_db(ENV)
 
-    old_recordings = get_recent_recordings(conn, current_timestamp)
+    old_recordings = get_recent_recordings(conn, current_timestamp, ENV)
 
     del_recent_recordings(conn, current_timestamp, ENV)
 
+    recordings_df = remove_sim_soil_moist_temp_values(old_recordings)
+
     csv = f"{create_current_datetime_filename(current_timestamp)}.csv"
 
-    convert_data_csv_file(old_recordings, csv)
+    convert_data_csv_file(recordings_df, csv)
 
     s3 = client("s3",
                 aws_access_key_id=ENV["AWS_ACCESS_KEY_ID"],
