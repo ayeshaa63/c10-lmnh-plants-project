@@ -48,12 +48,13 @@ def test_expected_outcome_full_single():
             'origin_url': 'https://perenual.com/og/Epipremnum_aureum.jpg',
             'last_watered': 'Mon, 15 Apr 2024 14:03:04 GMT',
             'plant_id': 0,
+            'plant_name': 'Epipremnum Aureum',
             'timestamp': '2024-04-16 08:22:43',
             'scientific_name': 'Epipremnum aureum',
             'soil_moisture': 36.12849992449178,
             'temp': 22.187149686325654}
-  
-  
+
+
 @pytest.fixture
 def test_plant():
     '''Returns an example dictionary.'''
@@ -67,4 +68,3 @@ def test_plant():
             'recording_taken': '2024-04-16 09:16:20',
             'soil_moisture': 36.24902002881845,
             'temperature': 9.975278583615802}
-
