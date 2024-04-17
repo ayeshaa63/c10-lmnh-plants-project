@@ -117,8 +117,11 @@ def transform(plants: list[dict]) -> pd.DataFrame:
 
     plant_df = pd.DataFrame(rows)
 
+    """EMAIL ALERT FOR SENSOR FAILURE, 
+    COMMENTED OUT TO NOT RUN OVER THE LIMIT
     if sensor_failures:
         send_email(sensor_failures)
+    """
 
     if rows:
         plant_df = clean(plant_df)
