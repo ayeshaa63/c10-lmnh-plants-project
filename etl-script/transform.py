@@ -5,9 +5,12 @@ import re
 import pandas as pd
 import time
 import asyncio
+from os import environ as ENV
+from dotenv import load_dotenv
 
 
 from extract import get_all_plants
+from email_alert import send_email
 
 ERROR_NOT_FOUND = "plant not found"
 ERROR_ON_LOAN = "plant on loan to another museum"
@@ -40,6 +43,7 @@ def recording_information(plant: dict) -> dict:
     last_watered = plant.get('last_watered')
     plant_id = plant.get('plant_id')
     timestamp = plant.get('recording_taken')
+    plant_name = plant.get('name')
     scientific_name = plant.get('scientific_name')
 
     if scientific_name:
@@ -55,6 +59,7 @@ def recording_information(plant: dict) -> dict:
         "origin_url": origin_url,
         "last_watered": last_watered,
         "plant_id": plant_id,
+        "plant_name": plant_name,
         "timestamp": timestamp,
         "scientific_name": scientific_name,
         "soil_moisture": soil_moisture,
@@ -111,7 +116,9 @@ def transform(plants: list[dict]) -> pd.DataFrame:
         rows.append(recording_information(plant))
 
     plant_df = pd.DataFrame(rows)
-    # EMAIL sensor_failures
+
+    if sensor_failures:
+        send_email(sensor_failures)
 
     if rows:
         plant_df = clean(plant_df)
@@ -121,6 +128,7 @@ def transform(plants: list[dict]) -> pd.DataFrame:
 if __name__ == "__main__":
 
     start_time = time.time()
+    load_dotenv()
     plants = asyncio.run(get_all_plants(51))
     df = transform(plants)
     print(df)
