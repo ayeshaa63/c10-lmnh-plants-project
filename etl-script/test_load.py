@@ -4,9 +4,8 @@ import pandas as pd
 from load import get_botanist_ids, check_plants, upload_watering_data, upload_recordings_data, load
 
 
-@patch("load.environ")
 @patch("load.connect_to_db")
-def test_load(fake_db_connection, fake_environ):
+def test_load(fake_db_connection):
     """A test to pass the workflow checks (for now)"""
     fake_db_connection = None
     fake_db_connection.commit = None
