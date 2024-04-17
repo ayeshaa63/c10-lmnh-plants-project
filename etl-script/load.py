@@ -60,12 +60,12 @@ def upload_watering_data(df: pd.DataFrame, conn: Connection, config):
         for _, watering in waterings.iterrows():
             cmd = f"""IF NOT EXISTS (SELECT timestamp, plant_id
                         FROM {config['SCHEMA_NAME']}.watering
-                        WHERE timestamp = CAST('{watering.iloc[0]}' AS DATETIME)
+                        WHERE timestamp = CAST('{watering.iloc[0]}' AS TIMESTAMP)
                         AND plant_id = {watering.iloc[1]})
                         BEGIN
                         INSERT INTO {config['SCHEMA_NAME']}.watering
                         (timestamp, plant_id) VALUES
-                        (CAST('{watering.iloc[0]}' AS DATETIME), {watering.iloc[1]})
+                        (CAST('{watering.iloc[0]}' AS TIMESTAMP), {watering.iloc[1]})
                         END"""
             print(cmd)
             cur.execute(cmd)
