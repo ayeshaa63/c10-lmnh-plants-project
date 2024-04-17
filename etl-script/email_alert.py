@@ -31,7 +31,8 @@ def get_to_emails():
 def send_email(sensor_failures: list[str]):
     """sends an email report of plant sensor faults using AWS SES"""
     current_datetime = datetime.now()
-    ses = boto3.client('ses', region_name='eu-west-2')
+    region = ENV['REGION']
+    ses = boto3.client('ses', region_name=region)
     from_email = ENV['NATHAN_EMAIL']
 
     message = create_message(sensor_failures)
