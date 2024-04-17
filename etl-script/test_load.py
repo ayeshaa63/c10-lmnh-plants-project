@@ -8,7 +8,7 @@ from load import get_botanist_ids, check_plants, upload_watering_data, upload_re
 def test_load(fake_db_connection):
     """A test to pass the workflow checks (for now)"""
     fake_db_connection = None
-    fake_db_connection.commit = None
+    fake_db_connection.return_value.commit = None
     fake_db_connection.return_value.cursor.return_value = None
     fake_db_connection.return_value.cursor.return_value.execute.return_value = None
     fake_db_connection.return_value.cursor.return_value.fetchone.return_value = {
