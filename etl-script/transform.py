@@ -3,6 +3,17 @@ It will output a Dataframe."""
 
 import re
 import pandas as pd
+import time
+import asyncio
+
+
+from extract import get_all_plants
+
+ERROR_NOT_FOUND = "plant not found"
+ERROR_ON_LOAN = "plant on loan to another museum"
+ERROR_NO_CONNECTION = "Cannot connect to the API."
+ERROR_SENSOR_FAIL = "plant sensor fault"
+
 
 def get_phone_number(number: str) -> str:
     """Changes phone numbers so they only have digits and brackets"""
@@ -70,17 +81,47 @@ def clean(plant_df: pd.DataFrame) -> pd.DataFrame:
     return plant_df
 
 
+def error_handling(plant: dict) -> None:
+    """A function to appropriately handle any errors from the api"""
+
+    error_msg = 'ERROR :: PLANT {} :: {} :: {}'
+    error_msg = error_msg.format(plant.get('plant_id'),
+                                 plant.get('error'), plant.get('exception'))
+
+    if plant.get('error') == ERROR_SENSOR_FAIL:
+        return error_msg
+    if plant.get('error') == ERROR_ON_LOAN:
+        return ""
+
+    print(error_msg)
+    return ""
+
+
 def transform(plants: list[dict]) -> pd.DataFrame:
     """main transforming function"""
 
     rows = []
+    sensor_failures = []
     for plant in plants:
         if plant.get('error'):
+            error_msg = error_handling(plant)
+            if error_msg:
+                sensor_failures.append(error_msg)
             continue
         rows.append(recording_information(plant))
 
     plant_df = pd.DataFrame(rows)
+    # EMAIL sensor_failures
 
     if rows:
         plant_df = clean(plant_df)
     return plant_df
+
+
+if __name__ == "__main__":
+
+    start_time = time.time()
+    plants = asyncio.run(get_all_plants(51))
+    df = transform(plants)
+    print(df)
+    print(f"--- {(time.time() - start_time)} seconds taken ---")
