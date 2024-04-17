@@ -1,10 +1,11 @@
-"""A script to insert missing metadata into the database"""
+"""A script to insert missing plant data into the database"""
+
+
+from os import environ as ENV
 
 import requests
-from os import environ as ENV
 from pymssql import connect, Connection
 from dotenv import load_dotenv
-from extract import get_plant_data
 
 
 def connect_to_db(config):
@@ -20,7 +21,7 @@ def connect_to_db(config):
 
 
 def get_plant_data(plant_id: int) -> dict:
-    '''Extracts json data from API endpoint for given plant id.'''
+    """Extracts json data from API endpoint for given plant id."""
 
     try:
         response = requests.get(
@@ -30,9 +31,9 @@ def get_plant_data(plant_id: int) -> dict:
         data['plant_id'] = plant_id
         return data
 
-    except Exception as e:
+    except Exception as err:
         return {'error': 'Cannot connect to the API.',
-                'exception': e, 'plant_id': plant_id}
+                'exception': err, 'plant_id': plant_id}
 
 
 def insert_continent(continent: str, conn: Connection, config):
@@ -161,6 +162,7 @@ def insert_plant_data(plant_dict: dict, conn: Connection, config):
 
 
 def insert_missing_plant(plant_id, config):
+    """Insert missing plant into database from specific id."""
     plant = get_plant_data(plant_id)
     if plant:
         with connect_to_db(config) as conn:

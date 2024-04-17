@@ -2,11 +2,11 @@
 upload it to a Microsoft SQL Server database."""
 
 import asyncio
-import aiohttp
 import time
+from os import environ as ENV
+
 import pandas as pd
 from pymssql import connect, Connection
-from os import environ as ENV
 from dotenv import load_dotenv
 
 from extract import get_all_plants
@@ -26,12 +26,12 @@ def connect_to_db(config):
     )
 
 
-def get_botanist_ids(df: pd.DataFrame, conn: Connection, config) -> pd.DataFrame:
+def get_botanist_ids(dataframe: pd.DataFrame, conn: Connection, config) -> pd.DataFrame:
     """Look through botanist data in database:
      - If botanist doesn't exist, add them to database and get id,
      - If botanist does already exist, get their id as appear in table.
      Replace botanist columns in DataFrame to a column of ids."""
-    botanists = df[['name', 'phone', 'email']]
+    botanists = dataframe[['name', 'phone', 'email']]
     ids = []
 
     with conn.cursor() as cur:
@@ -56,13 +56,13 @@ def get_botanist_ids(df: pd.DataFrame, conn: Connection, config) -> pd.DataFrame
                 botanist_info = cur.fetchone()
 
             ids.append(botanist_info['botanist_id'])
-    df['botanist_id'] = pd.Series(ids, dtype=int)
-    return df
+    dataframe['botanist_id'] = pd.Series(ids, dtype=int)
+    return dataframe
 
 
-def check_plants(df: pd.DataFrame, conn: Connection, config):
+def check_plants(dataframe: pd.DataFrame, conn: Connection, config):
     """Insert data for a plant into the plant table of the database."""
-    plants = df[[
+    plants = dataframe[[
         "plant_id",
         "scientific_name",
         "soil_moisture",
@@ -79,14 +79,14 @@ def check_plants(df: pd.DataFrame, conn: Connection, config):
             if not plant_info:
                 try:
                     insert_missing_plant(plant_id, ENV)
-                except:
+                except Exception:
                     bad_plants.append(plant_id)
     return bad_plants
 
 
-def upload_watering_data(df: pd.DataFrame, conn: Connection, config, bad_plants):
+def upload_watering_data(dataframe: pd.DataFrame, conn: Connection, config, bad_plants):
     """Upload new watering data to database."""
-    waterings = df[['last_watered', 'plant_id']]
+    waterings = dataframe[['last_watered', 'plant_id']]
     with conn.cursor() as cur:
         for _, watering in waterings.iterrows():
             if watering.iloc[1] not in bad_plants:
@@ -104,10 +104,10 @@ def upload_watering_data(df: pd.DataFrame, conn: Connection, config, bad_plants)
                 print(f"Plant {watering.iloc[1]} isn't in the database!")
 
 
-def upload_recordings_data(df: pd.DataFrame, conn: Connection, config, bad_plants):
+def upload_recordings_data(dataframe: pd.DataFrame, conn: Connection, config, bad_plants):
     """Uploads transaction data to the database."""
-    recordings = df[['timestamp', 'temp',
-                     'soil_moisture', 'botanist_id', 'plant_id']]
+    recordings = dataframe[['timestamp', 'temp',
+                            'soil_moisture', 'botanist_id', 'plant_id']]
     with conn.cursor() as cur:
         for _, record in recordings.iterrows():
             if record.iloc[4] not in bad_plants:
@@ -122,19 +122,19 @@ def upload_recordings_data(df: pd.DataFrame, conn: Connection, config, bad_plant
                 print(f"Plant {record.iloc[4]} isn't in the database!")
 
 
-def load(df: pd.DataFrame, config) -> None:
+def load(dataframe: pd.DataFrame, config) -> None:
     """Load new records into database."""
     with connect_to_db(config) as conn:
-        bad_plants = check_plants(df, conn, config)
-        df = get_botanist_ids(df, conn, config)
-        upload_watering_data(df, conn, config, bad_plants)
-        upload_recordings_data(df, conn, config, bad_plants)
+        bad_plants = check_plants(dataframe, conn, config)
+        dataframe = get_botanist_ids(dataframe, conn, config)
+        upload_watering_data(dataframe, conn, config, bad_plants)
+        upload_recordings_data(dataframe, conn, config, bad_plants)
 
 
 if __name__ == "__main__":
     load_dotenv()
     start_time = time.time()
-    plants = asyncio.run(get_all_plants(51))
-    df = transform(plants)
-    load(df, ENV)
+    all_plants = asyncio.run(get_all_plants(51))
+    data = transform(all_plants)
+    load(data, ENV)
     print(f"--- {(time.time() - start_time)} seconds taken ---")
