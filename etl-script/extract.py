@@ -1,13 +1,11 @@
 """A script to extract data in a JSON format from several API endpoints. 
-The data should then be returned as a Dataframe."""
+The data should then be returned as a list of Dictionaries."""
 
-import pandas as pd
 import asyncio
 import aiohttp
-from datetime import datetime
 
 
-async def get_plant_data(session, plant_id: int) -> pd.DataFrame:
+async def get_plant_data(session, plant_id: int) -> dict:
     '''Extracts json data from API endpoint for given plant id.'''
 
     try:
@@ -40,4 +38,3 @@ async def get_all_plants(no_of_plants: int) -> list[dict]:
 if __name__ == "__main__":
 
     resp = asyncio.run(get_all_plants(51))
-

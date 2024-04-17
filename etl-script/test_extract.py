@@ -1,8 +1,9 @@
 '''Tests functions in the extract file.'''
 
-from unittest.mock import patch
-from extract import get_all_plants
 import asyncio
+from unittest.mock import patch
+
+from extract import get_all_plants
 
 
 @patch('extract.get_plant_data')
