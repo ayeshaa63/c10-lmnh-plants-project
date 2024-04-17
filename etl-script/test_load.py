@@ -2,4 +2,5 @@
 
 
 def test_load():
+    """A test to pass the workflow checks (for now)"""
     return None
