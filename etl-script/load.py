@@ -54,7 +54,6 @@ def get_botanist_ids(dataframe: pd.DataFrame, conn: Connection, config) -> pd.Da
                     AND phone='{botanist.iloc[1]}'
                     AND email='{botanist.iloc[2]}'""")
                 botanist_info = cur.fetchone()
-
             ids.append(botanist_info['botanist_id'])
     dataframe['botanist_id'] = pd.Series(ids, dtype=int)
     return dataframe
