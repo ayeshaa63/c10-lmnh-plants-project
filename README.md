@@ -2,17 +2,7 @@
 
 ## ETL Scripts
 
-### extract.py
-
-Extracts the data which is in JSON form, from an API endpoint and loads it into a pandas dataframe. The dataframe is passed to extract.py
-
-### transform.py
-
-Cleans and normalises the data within the passed in dataframe. The dataframe is passed to transform.py.
-
-### load.py
-
-Uploads a passed in dataframe to the Microsoft SQL Server database.
+{INFO ABOUT ETL SCRIPTS HERE}
 
 
 ## Long Term Storage Loading
