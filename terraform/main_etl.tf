@@ -12,7 +12,7 @@ resource "aws_scheduler_schedule" "alpha_etl_schedule" {
     schedule_expression = "cron(* * * * ? *)"
     target {
     arn      = aws_lambda_function.alpha-etl-lambda.arn
-    role_arn = "role arn"
+    role_arn = aws_iam_role.iam_for_eventbridge.arn
     }
 }
 
@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "assume_role_event" {
 
     principals {
       type        = "Service"
-      identifiers = ["???"]
+      identifiers = ["scheduler.amazonaws.com"]
     }
 
     actions = ["sts:AssumeRole"]
@@ -63,5 +63,5 @@ resource "aws_lambda_function" "alpha-etl-lambda" {
   function_name = "alpha-etl-lambda"
   image_uri     = "${aws_ecr_repository.alpha_etl_image.repository_url}:latest"
   package_type  = "Image"
-  role          = aws_iam_role.lambda.arn
+  role          = aws_iam_role.iam_for_lambda.arn
 }
