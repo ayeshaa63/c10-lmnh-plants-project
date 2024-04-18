@@ -11,18 +11,6 @@ resource "aws_scheduler_schedule" "alpha_etl_schedule" {
     }
 }
 
-data "aws_iam_policy_document" "assume_role_lam" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "Service"
-      identifiers = ["lambda.amazonaws.com"]
-    }
-
-    actions = ["sts:AssumeRole"]
-  }
-}
 data "aws_iam_policy_document" "assume_role_event" {
   statement {
     effect = "Allow"
@@ -36,11 +24,6 @@ data "aws_iam_policy_document" "assume_role_event" {
   }
 }
 
-resource "aws_iam_role" "iam_for_lambda" {
-  name               = "iam-for-lambda"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_lam.json
-}
-
 resource "aws_iam_role" "iam_for_eventbridge" {
   name               = "iam-for-eventbridge"
   assume_role_policy = data.aws_iam_policy_document.assume_role_event.json
@@ -48,9 +31,10 @@ resource "aws_iam_role" "iam_for_eventbridge" {
 
 resource "aws_lambda_function" "alpha-etl-lambda" {
   function_name = "alpha-etl-lambda"
-  image_uri     = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c10-late-devonian-storage:latest"
+  image_uri     = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c10-late-devonian-etl:latest"
   package_type  = "Image"
-  role          = aws_iam_role.iam_for_lambda.arn
+  role          = "arn:aws:iam::129033205317:role/service-role/c10-late-devonian-etl-short-term-role-m8hnmiud"
+  timeout = 60
   environment {
     variables = {
       DB_HOST=var.DB_HOST
