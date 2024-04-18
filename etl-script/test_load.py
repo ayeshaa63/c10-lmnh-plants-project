@@ -4,7 +4,8 @@ import pandas as pd
 from load import get_botanist_ids, check_plants, upload_watering_data, upload_recordings_data, load
 
 
-def test_botanist_id_func():
+def test_botanist_func_valid():
+    """Test that the function 'get_botanist_ids' runs correctly."""
     mock_connect = MagicMock()
     cursor = mock_connect.cursor.return_value
     cursor.__enter__.return_value.fetchone.return_value = {'botanist_id': 1}
