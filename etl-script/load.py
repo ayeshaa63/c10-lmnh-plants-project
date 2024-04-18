@@ -138,6 +138,8 @@ def handler(event=None, context=None):
     data = transform(all_plants)
     load(data, ENV)
 
+    return {"message": "Process completed."}
+
 
 if __name__ == "__main__":
     load_dotenv()
