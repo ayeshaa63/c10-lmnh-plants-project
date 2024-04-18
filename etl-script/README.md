@@ -4,7 +4,17 @@
 ```sh
 bash install.sh
 ```
+### Environment variables
 
+The following env variables must be accessible to the script:
+```sh
+DB_HOST
+DB_NAME
+DB_USER
+DB_PASS
+DB_PORT
+SCHEMA_NAME
+```
 ## Usage
 
 ```sh
@@ -19,11 +29,11 @@ For building a docker image of the ETL pipeline.
 
 ### extract.py
 
-Extracts the data which is in JSON form, from an API endpoint and loads it into a pandas dataframe. The dataframe is passed to extract.py
+Extracts the data which is in JSON form, from an API endpoint and loads it into a pandas dataframe. The dataframe is passed to transform.py
 
 ### transform.py
 
-Cleans and normalises the data within the passed in dataframe. The dataframe is passed to transform.py.
+Cleans and normalises the data within the passed in dataframe. The dataframe is passed to load.py.
 
 ### load.py
 
