@@ -1,7 +1,8 @@
-variable "AWS_ACCESS_KEY_ID" {
+variable "ACCESS_KEY_ID" {
     type = string
 }
-variable "AWS_SECRET_ACCESS_KEY_ID" {
+
+variable "SECRET_ACCESS_KEY" {
     type = string
 }
 variable "DB_USER" {
@@ -25,8 +26,29 @@ variable "SCHEMA_NAME" {
 }
 
 variable "STORAGE_IMAGE_LOCATION" {
-    type = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c10-late-devonian-storage:latest"
+    type = string
+    default = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c10-late-devonian-storage:latest"
 }
 
+variable "BUCKET_NAME" {
+    type = string
+}
+
+variable "AYESHA_EMAIL" {
+    type = string 
+}
+variable "DANA_EMAIL" {
+    type = string 
+}
+variable "HOWARD_EMAIL" {
+    type = string 
+}
+variable "NATHAN_EMAIL" {
+    type = string 
+}
+variable "REGION" {
+    type = string 
+    default = "eu-west-2"
+}
 
 
