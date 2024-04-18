@@ -63,14 +63,40 @@ def create_current_datetime_key(current_timestamp: str) -> str:
 
 def convert_data_csv_file(data: pd.DataFrame) -> None:
     """Given a pd.DataFrame object, we convert it into CSV format."""
-    data.to_csv('recording.csv', index=False)
+    data.to_csv('/tmp/recording.csv', index=False)
 
 
 def load_csv_file(s3_client: client, csv_filename: str, config) -> None:
     """Given a CSV file, we now connect to an S3 bucket and load."""
     s3_client.upload_file(Bucket=config["BUCKET_STORAGE_NAME"],
-                          Filename='recording.csv',
+                          Filename='/tmp/recording.csv',
                           Key=csv_filename)
+
+
+def handler(event=None, context=None) -> None:
+    """Lambda handler function"""
+
+    load_dotenv()
+
+    current_timestamp = datetime.now()
+
+    conn = connect_to_db(ENV)
+
+    old_recordings = get_recent_recordings(conn, ENV)
+
+    del_recent_recordings(conn, ENV)
+
+    csv = f"{create_current_datetime_key(current_timestamp)}.csv"
+
+    convert_data_csv_file(old_recordings)
+
+    s3 = client("s3",
+                aws_access_key_id=ENV["ACCESS_KEY_ID"],
+                aws_secret_access_key=ENV["SECRET_ACCESS_KEY"])
+
+    load_csv_file(s3, csv, ENV)
+
+    return {"message": "Long-term storage loading complete"}
 
 
 if __name__ == "__main__":
