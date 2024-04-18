@@ -12,4 +12,4 @@ def sample_datetime():
 
 def test_create_current_datetime_filename(sample_datetime):
     assert create_current_datetime_filename(
-        sample_datetime) == "2000/11/29/14:48"
+        sample_datetime) == "./2000/11/29/14:48"
