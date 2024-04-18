@@ -47,6 +47,10 @@ Extracts and uploads metadata when `load.py` encounters a plant that doesn't exi
 
 For sending email alerts when a problem is encountered in the data
 
+### conftest.py
+
+Useful functions for use in pytests.
+
 ## Tests
 
 ### test_extract.py
