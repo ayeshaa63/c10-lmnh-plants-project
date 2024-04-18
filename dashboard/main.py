@@ -45,17 +45,29 @@ if __name__ == "__main__":
 
     average_temps = data.groupby(['plant_id'])['temp'].mean().reset_index()
 
-    avg_rev = alt.Chart(average_temps, title='Average Temperatures').mark_bar().encode(
+    avg_temp = alt.Chart(average_temps, title='Average Temperatures').mark_bar().encode(
         x='plant_id:N',
-        y='temp'
+        y='temp',
+        color='plant_id:N'
     )
 
-    st.altair_chart(avg_rev)
+    st.altair_chart(avg_temp)
 
-    temps = alt.Chart(data, title='Temperature over time').mark_line().encode(
+    with st.sidebar:
+        plant_list = st.multiselect('Plant ID', range(51), range(51))
+
+    temps = alt.Chart(data[data['plant_id'].isin(plant_list)], title='Temperature over time').mark_line().encode(
         x='timestamp:T',
         y='temp:Q',
         color='plant_id:N'
     )
 
-    st.altair_chart(temps)
+    st.altair_chart(temps, use_container_width=True)
+
+    moist = alt.Chart(data.loc[data['plant_id'].isin(plant_list)], title='Soil moisture over time').mark_line().encode(
+        x='timestamp:T',
+        y='soil_moisture:Q',
+        color='plant_id:N'
+    )
+
+    st.altair_chart(moist, use_container_width=True)
