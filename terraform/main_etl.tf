@@ -1,16 +1,3 @@
-resource "aws_scheduler_schedule" "alpha_etl_schedule" {
-    name = "alpha-etl-schedule"
-    flexible_time_window {
-    mode = "OFF"
-    }
-    schedule_expression = "cron(*/1 * * * ? *)"
-    schedule_expression_timezone = "Europe/London"
-    target {
-    arn      = aws_lambda_function.alpha-etl-lambda.arn
-    role_arn = "arn:aws:iam::129033205317:role/service-role/Amazon_EventBridge_Scheduler_LAMBDA_1e67d5c529"
-    }
-}
-
 resource "aws_lambda_function" "alpha-etl-lambda" {
   function_name = "alpha-etl-lambda"
   image_uri     = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c10-late-devonian-etl:latest"
@@ -32,4 +19,17 @@ resource "aws_lambda_function" "alpha-etl-lambda" {
       REGION=var.REGION
     }
 }
+}
+
+resource "aws_scheduler_schedule" "alpha_etl_schedule" {
+    name = "alpha-etl-schedule"
+    flexible_time_window {
+    mode = "OFF"
+    }
+    schedule_expression = "cron(*/1 * * * ? *)"
+    schedule_expression_timezone = "Europe/London"
+    target {
+    arn      = aws_lambda_function.alpha-etl-lambda.arn
+    role_arn = "arn:aws:iam::129033205317:role/service-role/Amazon_EventBridge_Scheduler_LAMBDA_1e67d5c529"
+    }
 }
