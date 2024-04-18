@@ -42,3 +42,20 @@ if __name__ == "__main__":
     st.title('LMNH Plants Dashboard')
 
     st.write(data)
+
+    average_temps = data.groupby(['plant_id'])['temp'].mean().reset_index()
+
+    avg_rev = alt.Chart(average_temps, title='Average Temperatures').mark_bar().encode(
+        x='plant_id:N',
+        y='temp'
+    )
+
+    st.altair_chart(avg_rev)
+
+    temps = alt.Chart(data, title='Temperature over time').mark_line().encode(
+        x='timestamp:T',
+        y='temp:Q',
+        color='plant_id:N'
+    )
+
+    st.altair_chart(temps)
