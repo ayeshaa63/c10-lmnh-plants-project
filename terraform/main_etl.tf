@@ -51,4 +51,14 @@ resource "aws_lambda_function" "alpha-etl-lambda" {
   image_uri     = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c10-late-devonian-storage:latest"
   package_type  = "Image"
   role          = aws_iam_role.iam_for_lambda.arn
+  environment {
+    variables = {
+      DB_HOST="${DB_HOST}"
+      DB_NAME="${DB_NAME}"
+      SCHEMA_NAME="${SCHEMA_NAME}"
+      DB_USER="${DB_USER}"
+      DB_PASS="${DB_PASS}"
+      DB_PORT="${DB_PORT}"
+    }
+}
 }
