@@ -15,10 +15,37 @@ DB_PASS
 DB_PORT
 SCHEMA_NAME
 ```
+
+## Requirements
+
+
+To install requirements, if you want to run the scripts manually, run this command line in the root of the directory within a virtual environment:
+```sh
+pip3 install -r requirements.txt
+```
+The following are all the requirements for all the scripts to run within the project:
+```sh
+pandas
+python-dotenv
+pymssql
+pytest
+pylint
+pytest-mock
+requests-mock
+aiohttp
+boto3
+```
+
 ## Usage
 
+To manually run the ETL Pipeline use the command:
 ```sh
 python3 load.py
+```
+
+To manually run the Long Term Storage script use the command:
+```sh
+python3 storage_load.py
 ```
 
 ## Dockerfile
@@ -29,15 +56,15 @@ For building a docker image of the ETL pipeline.
 
 ### extract.py
 
-Extracts the data which is in JSON form, from an API endpoint and loads it into a pandas dataframe. The dataframe is passed to transform.py
+Extracts the data which is in JSON form, from an API endpoint and loads it a list of dictionaries. The list of dictionaries is returned for use in transform.py. The script uses multiprocessing to ensure speed because the script will be triggered every minute so it has a maximum of a minute to run.
 
 ### transform.py
 
-Cleans and normalises the data within the passed in dataframe. The dataframe is passed to load.py.
+Takes the key fields from the list of dictionaries passed in and creates a DataFrame. The data is then cleaned and normalised with errors being caught and handled appropriately. Any error that involves a sensor failure is put into a sensor failure list which is then passed to email_alert.py to give the recipients a warning. Email alert code is commented out so as not to run over the email limit on AWS. A DataFrame is returned.
 
 ### load.py
 
-Uploads a passed in dataframe to the Microsoft SQL Server database.
+This script takes in a DataFrame of passed in plant information and uploads the data to their respective relations within the database. The database used is a Microsoft TSQL Database hosted on AWS RDS. The entire ETL Script is run from this file and so is the main script.
 
 ### insert_missing_metadata.py
 
