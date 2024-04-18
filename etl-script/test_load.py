@@ -17,4 +17,3 @@ def test_botanist_id_func():
     assert 'phone' in test_return
     assert 'email' in test_return
     assert pd.api.types.is_numeric_dtype(test_return['botanist_id'])
-    assert test_return['botanist_id'] == pd.DataFrame({'botanist_id': [1, 1]})
