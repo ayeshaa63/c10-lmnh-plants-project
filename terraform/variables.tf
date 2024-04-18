@@ -27,7 +27,6 @@ variable "SCHEMA_NAME" {
 
 variable "STORAGE_IMAGE_LOCATION" {
     type = string
-    default = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c10-late-devonian-storage:latest"
 }
 
 variable "BUCKET_NAME" {
@@ -48,7 +47,6 @@ variable "NATHAN_EMAIL" {
 }
 variable "REGION" {
     type = string 
-    default = "eu-west-2"
 }
 
 
