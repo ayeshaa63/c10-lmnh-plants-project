@@ -12,6 +12,6 @@ def test_Call_sql():
     test_return = get_botanist_ids(pd.DataFrame({'name': ['mickey', 'mouse'], 'phone': [
         '8437234', '0-09280'], 'email': ['87324r832@gmail.com', 'mickeymouse@clubhouse.com']}), mock_connect, fake_environ)
     assert 'botanist_id' in test_return
-    assert isinstance(test_return['botanist_id'].dtype, int)
+    assert pd.api.types.is_numeric_dtype(test_return['botanist_id'])
     assert test_return == pd.DataFrame({'name': ['mickey', 'mouse'], 'phone': [
-        '8437234', '0-09280'], 'email': ['87324r832@gmail.com', 'mickeymouse@clubhouse.com'], 'botanist_id': [1, 1]})
+                                       '8437234', '0-09280'], 'email': ['87324r832@gmail.com', 'mickeymouse@clubhouse.com'], 'botanist_id': [1, 1]})
