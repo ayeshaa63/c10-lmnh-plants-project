@@ -82,6 +82,10 @@ def clean(plant_df: pd.DataFrame) -> pd.DataFrame:
     plant_df['timestamp'] = pd.to_datetime(plant_df['timestamp'])
     plant_df['timestamp'] = plant_df['timestamp'].dt.tz_localize(None)
     plant_df['phone'] = plant_df['phone'].apply(get_phone_number)
+    plant_df['soil_moisture'] = plant_df[(
+        plant_df['soil_moisture'] > 0) & (plant_df['soil_moisture'] <= 50)]
+    plant_df['temp'] = plant_df[(
+        plant_df['temp'] >= 0) & (plant_df['temp'] <= 40)]
 
     return plant_df
 
