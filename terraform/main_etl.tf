@@ -5,7 +5,7 @@ provider "aws" {
 }
 
 resource "aws_scheduler_schedule" "alpha_etl_schedule" {
-    name = "alpha_etl_schedule"
+    name = "alpha-etl-schedule"
     flexible_time_window {
     mode = "OFF"
     }
@@ -42,17 +42,17 @@ data "aws_iam_policy_document" "assume_role_event" {
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
-  name               = "iam_for_lambda"
+  name               = "iam-for-lambda"
   assume_role_policy = data.aws_iam_policy_document.assume_role_lam.json
 }
 
 resource "aws_iam_role" "iam_for_eventbridge" {
-  name               = "iam_for_eventbridge"
+  name               = "iam-for-eventbridge"
   assume_role_policy = data.aws_iam_policy_document.assume_role_event.json
 }
 
-resource "aws_ecr_repository" "alpha_etl_image" {
-  name                 = "alpha_etl_image"
+resource "aws_ecr_repository" "alpha_etl_repo" {
+  name                 = "alpha-etl-repo"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -61,7 +61,7 @@ resource "aws_ecr_repository" "alpha_etl_image" {
 }
 resource "aws_lambda_function" "alpha-etl-lambda" {
   function_name = "alpha-etl-lambda"
-  image_uri     = "${aws_ecr_repository.alpha_etl_image.repository_url}:latest"
+  image_uri     = "${aws_ecr_repository.alpha_etl_repo.repository_url}:latest"
   package_type  = "Image"
   role          = aws_iam_role.iam_for_lambda.arn
 }
