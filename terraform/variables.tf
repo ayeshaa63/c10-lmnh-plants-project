@@ -18,7 +18,7 @@ variable "DB_NAME" {
     type = string
 }
 variable "DB_PORT" {
-    type = string
+    type = number
 }
 variable "SCHEMA_NAME" {
     type = string 

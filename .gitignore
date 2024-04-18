@@ -7,8 +7,13 @@ test_data.py
 *.ipynb
 *.json
 __pycache__
+
+
 *.tfvars
 .tfstate
+terraform.tfstate
+.terraform.tfstate
+.terraform.tfstate.lock.info
 terraform.tfstate.backup
-.terraform.locl.hcl
+.terraform.lock.hcl
 
