@@ -12,3 +12,4 @@ test_data.py
 *.ipynb
 *.json
 __pycache__
+.tfvars
