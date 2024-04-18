@@ -7,7 +7,7 @@ from load import get_botanist_ids, check_plants, upload_watering_data, upload_re
 def test_botanist_id_func():
     mock_connect = MagicMock()
     cursor = mock_connect.cursor.return_value
-    cursor.__enter__.fetchone.return_value = {'botanist_id': 1}
+    cursor.__enter__.fetchone.__getitem__.return_value = {'botanist_id': 1}
     fake_environ = {'SCHEMA_NAME': 'test_schema'}
     test_return = get_botanist_ids(pd.DataFrame({'name': ['mickey', 'mouse'], 'phone': [
         '8437234', '0-09280'], 'email': ['87324r832@gmail.com', 'mickeymouse@clubhouse.com']}), mock_connect, fake_environ)
