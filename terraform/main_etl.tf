@@ -1,4 +1,3 @@
-
 resource "aws_scheduler_schedule" "alpha_etl_schedule" {
     name = "alpha-etl-schedule"
     flexible_time_window {
