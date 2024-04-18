@@ -42,6 +42,7 @@ def get_botanist_ids(dataframe: pd.DataFrame, conn: Connection, config) -> pd.Da
                     AND phone='{botanist.iloc[1]}'
                     AND email='{botanist.iloc[2]}'""")
             botanist_info = cur.fetchone()
+            print(botanist_info)
             if not botanist_info:
                 cur.execute(
                     f"""INSERT INTO {config['SCHEMA_NAME']}.botanist
@@ -54,8 +55,8 @@ def get_botanist_ids(dataframe: pd.DataFrame, conn: Connection, config) -> pd.Da
                     AND phone='{botanist.iloc[1]}'
                     AND email='{botanist.iloc[2]}'""")
                 botanist_info = cur.fetchone()
-
             ids.append(botanist_info['botanist_id'])
+            print(ids)
     dataframe['botanist_id'] = pd.Series(ids, dtype=int)
     return dataframe
 
