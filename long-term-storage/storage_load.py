@@ -51,26 +51,25 @@ def del_recent_recordings(conn: Connection, config) -> None:
     cur.close()
 
 
-def create_current_datetime_filename(current_timestamp: datetime) -> str:
+def create_current_datetime_key(current_timestamp: str) -> str:
     """Given the current timestamp, a CSV filename is created."""
     current_yr = current_timestamp.year
     current_mth = current_timestamp.month
     current_day = current_timestamp.day
-    current_hr = current_timestamp.hour
-    current_min = current_timestamp.minute
+    current_time = current_timestamp.strftime("%H:%M")
 
-    return f"./{current_yr}/{current_mth}/{current_day}/{current_hr}:{current_min}"
+    return f"{current_yr}/{current_mth}/{current_day}/{current_time}"
 
 
-def convert_data_csv_file(data: pd.DataFrame, csv_filename: str) -> None:
+def convert_data_csv_file(data: pd.DataFrame) -> None:
     """Given a pd.DataFrame object, we convert it into CSV format."""
-    data.to_csv(csv_filename, index=False)
+    data.to_csv('recording.csv', index=False)
 
 
 def load_csv_file(s3_client: client, csv_filename: str, config) -> None:
     """Given a CSV file, we now connect to an S3 bucket and load."""
     s3_client.upload_file(Bucket=config["BUCKET_STORAGE_NAME"],
-                          Filename=csv_filename,
+                          Filename='recording.csv',
                           Key=csv_filename)
 
 
@@ -86,9 +85,9 @@ if __name__ == "__main__":
 
     del_recent_recordings(conn, ENV)
 
-    csv = f"{create_current_datetime_filename(current_timestamp)}.csv"
+    csv = f"{create_current_datetime_key(current_timestamp)}.csv"
 
-    convert_data_csv_file(old_recordings, csv)
+    convert_data_csv_file(old_recordings)
 
     s3 = client("s3",
                 aws_access_key_id=ENV["AWS_ACCESS_KEY_ID"],
