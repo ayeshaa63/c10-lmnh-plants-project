@@ -46,17 +46,9 @@ resource "aws_iam_role" "iam_for_eventbridge" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_event.json
 }
 
-resource "aws_ecr_repository" "alpha_etl_repo" {
-  name                 = "alpha-etl-repo"
-  image_tag_mutability = "MUTABLE"
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-}
 resource "aws_lambda_function" "alpha-etl-lambda" {
   function_name = "alpha-etl-lambda"
-  image_uri     = "${aws_ecr_repository.alpha_etl_repo.repository_url}:latest"
+  image_uri     = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c10-late-devonian-storage:latest"
   package_type  = "Image"
   role          = aws_iam_role.iam_for_lambda.arn
 }
