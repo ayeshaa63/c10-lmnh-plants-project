@@ -14,4 +14,4 @@ COPY email_alert.py .
 COPY load.py .
 COPY insert_missing_metadata.py .
 
-CMD ['load.handler']
+CMD ["load.handler"]
