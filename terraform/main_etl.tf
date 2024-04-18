@@ -32,7 +32,7 @@ data "aws_iam_policy_document" "assume_role_event" {
       identifiers = ["scheduler.amazonaws.com"]
     }
 
-    actions = ["sts:AssumeRole", "lambda:InvokeFunction"]
+    actions = ["sts:AssumeRole"]
   }
 }
 
