@@ -24,5 +24,20 @@ variable "SCHEMA_NAME" {
     type = string 
 }
 
+variable "AYESHA_EMAIL" {
+    type = string 
+}
+variable "DANA_EMAIL" {
+    type = string 
+}
+variable "HOWARD_EMAIL" {
+    type = string 
+}
+variable "NATHAN_EMAIL" {
+    type = string 
+}
+variable "REGION" {
+    type = string 
+}
 
 
