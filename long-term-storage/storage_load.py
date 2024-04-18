@@ -16,22 +16,20 @@ def connect_to_db(config) -> Connection:
     return connect(
         server=config["DB_HOST"],
         user=config["DB_USER"],
-        password=config["DB_PASSWORD"],
+        password=config["DB_PASS"],
         database=config["DB_NAME"],
         port=config["DB_PORT"],
         as_dict=True
     )
 
 
-def get_recent_recordings(conn: Connection, current_timestamp: datetime,
-                          config) -> pd.DataFrame:
+def get_recent_recordings(conn: Connection, config) -> pd.DataFrame:
     """Goes into database, and pulls all entries in the recording table with a timestamp
     older than 24 hours."""
     with conn.cursor() as cur:
-        cur.execute(f"""SELECT r.*
-                    FROM {config["SCHEMA"]}.recording AS r
-                    WHERE DATEDIFF(hour, %s, r.timestamp) > 24;""",
-                    (current_timestamp,))
+        cur.execute(
+            f"""SELECT * FROM {config["SCHEMA_NAME"]}.recording 
+            WHERE DATEDIFF(hour, timestamp, CURRENT_TIMESTAMP) > 24""")
 
         result = cur.fetchall()
 
@@ -41,14 +39,13 @@ def get_recent_recordings(conn: Connection, current_timestamp: datetime,
     return pd.DataFrame(result)
 
 
-def del_recent_recordings(conn: Connection, current_timestamp: datetime, config) -> None:
+def del_recent_recordings(conn: Connection, config) -> None:
     """Goes into database, and deletes all entries in the recording table with a timestamp
     older than 24 hours."""
     with conn.cursor() as cur:
-        cur.execute(f"""DELETE r.*
-                    FROM {config["SCHEMA"]}.recording AS r
-                    WHERE DATEDIFF(hour, %s, r.timestamp) > 24;""",
-                    (current_timestamp,))
+        cur.execute(
+            f"""DELETE FROM {config["SCHEMA_NAME"]}.recording 
+            WHERE DATEDIFF(hour, timestamp, CURRENT_TIMESTAMP) > 24""")
 
     conn.commit()
     cur.close()
@@ -62,7 +59,7 @@ def create_current_datetime_filename(current_timestamp: datetime) -> str:
     current_hr = current_timestamp.hour
     current_min = current_timestamp.minute
 
-    return f"{current_yr}/{current_mth}/{current_day}/{current_hr}:{current_min}"
+    return f"./{current_yr}/{current_mth}/{current_day}/{current_hr}:{current_min}"
 
 
 def convert_data_csv_file(data: pd.DataFrame, csv_filename: str) -> None:
@@ -85,9 +82,9 @@ if __name__ == "__main__":
 
     conn = connect_to_db(ENV)
 
-    old_recordings = get_recent_recordings(conn, current_timestamp, ENV)
+    old_recordings = get_recent_recordings(conn, ENV)
 
-    del_recent_recordings(conn, current_timestamp, ENV)
+    del_recent_recordings(conn, ENV)
 
     csv = f"{create_current_datetime_filename(current_timestamp)}.csv"
 
