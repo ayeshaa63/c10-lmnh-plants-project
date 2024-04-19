@@ -78,6 +78,20 @@ def world_map(origin_data):
     return background + points
 
 
+def get_sidebar(some_data):
+    """Set up streamlit sidebar with headers and filters."""
+    st.sidebar.title('Filters')
+    st.sidebar.subheader('Data analysis of plant conditions')
+    sorted = st.sidebar.checkbox('Sorted',
+                                 False)
+    with st.sidebar.expander('Filter by plant'):
+        plants = st.multiselect('Plants',
+                                some_data['Plant'].sort_values().unique(),
+                                default=some_data['Plant'].sort_values().unique())
+
+    return plants, sorted
+
+
 if __name__ == "__main__":
 
     load_dotenv()
@@ -90,9 +104,7 @@ if __name__ == "__main__":
         st.title('LMNH Plants Dashboard')
 
         # Sidebar
-        with st.sidebar:
-            plant_list = st.multiselect(
-                'Plant Name', basic_stats['Plant'].unique(), basic_stats['Plant'].unique())
+        plant_list, sorted = get_sidebar(basic_stats)
 
         # World Map
         w_map = world_map(get_data_from_db(
@@ -103,8 +115,12 @@ if __name__ == "__main__":
         average_temps = basic_stats.groupby(
             ['Plant'])['Temperature'].mean().reset_index()
 
+        if sorted:
+            x_avg_temp = alt.X('Plant:N').sort('-y')
+        else:
+            x_avg_temp = alt.X('Plant:N')
         avg_temp = alt.Chart(average_temps[average_temps['Plant'].isin(plant_list)], title='Average Temperatures').mark_bar().encode(
-            x='Plant:N',
+            x=x_avg_temp,
             y='Temperature',
             color='Plant:N'
         )
