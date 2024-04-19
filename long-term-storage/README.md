@@ -2,7 +2,7 @@
 ## Installation
 
 ```sh
-pip install -r requirements
+pip install -r requirements.txt
 ```
 ### Environment variables
 
@@ -22,7 +22,7 @@ AWS_SECRET_ACCESS_KEY
 ```
 ## Usage
 
-*For use in AWS lamda function.*
+*For use in AWS lambda function.*
 
 ## Dockerfile
 
