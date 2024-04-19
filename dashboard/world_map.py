@@ -43,7 +43,7 @@ def world_map(origin_data):
         width=500,
         height=300
     )
-    points = alt.Chart(origin_data).mark_circle().encode(
+    points = alt.Chart(origin_data).mark_circle(color='red', size=300).encode(
         longitude='lat:Q',
         latitude='long:Q',
         size=alt.value(10),
