@@ -98,7 +98,7 @@ def insert_origin(origin: list, conn: Connection, config):
     """Insert data into the origin table of the database,
     if it doesn't already exist.
     Return the origin id."""
-    long, lat, location, country, continent = origin
+    lat, long, location, country, continent = origin
     continent = continent.split('/')[-1]
     location = location.replace('\'', '\"')
     continent_id = insert_continent(continent, conn, config)

@@ -3,3 +3,4 @@ pandas
 pymssql
 altair
 streamlit
+vega_datasets
