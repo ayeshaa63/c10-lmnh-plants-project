@@ -21,6 +21,10 @@ aiohttp
 boto3
 ```
 
+## Cloud Architecture and Project Structure
+
+![alt text](arch_diagram.png)
+
 ## Directories
 
 ### etl-script
@@ -61,9 +65,37 @@ schema.sql
 insert_metadata.py
 ```
 
+#### ERD
+
+![alt text](ERD.png)
+
 ### terraform
 
-This directory contains the necessary terraform files to build up the cloud services and tear them down again. They cover creating the Lambda functions, the event schedulers and the S3 bucket. All these elements are also linked where necessary.
+This directory contains the necessary terraform files to build up the cloud services and tear them down again. They cover creating the Lambda functions, the event schedulers and the S3 bucket. All these elements are also linked where necessary. 
+
+A file for secret variables needs to be created this file needs to end in .tfvars and needs to contain:
+```sh
+ACCESS_KEY_ID
+SECRET_ACCESS_KEY
+BUCKET_NAME
+DB_USER
+DB_PASS
+SCHEMA_NAME
+DB_HOST
+DB_PORT
+DB_NAME
+```
+
+To build the cloud services, run these commands:
+```sh
+terraform init
+terraform plan
+terraform apply
+```
+To tear down the cloud services, use:
+```sh
+terraform destroy
+```
 
 ## Useful scripts
 
@@ -89,3 +121,4 @@ Then easily connect to the database with
 ```sh
 bash connect_to_db.sh
 ```
+
