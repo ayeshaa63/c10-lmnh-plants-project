@@ -2,11 +2,10 @@
 It will output a Dataframe."""
 
 import re
-import pandas as pd
 import time
 import asyncio
-from os import environ as ENV
 from dotenv import load_dotenv
+import pandas as pd
 
 
 from extract import get_all_plants
@@ -83,10 +82,9 @@ def clean(plant_df: pd.DataFrame) -> pd.DataFrame:
     plant_df['timestamp'] = plant_df['timestamp'].dt.tz_localize(None)
     plant_df['phone'] = plant_df['phone'].apply(get_phone_number)
     plant_df = plant_df[(
-        plant_df['soil_moisture'] > 0) & (plant_df['soil_moisture'] <= 50)]
+        plant_df['soil_moisture'] >= 0) & (plant_df['soil_moisture'] <= 100)]
     plant_df = plant_df[(
-        plant_df['temp'] >= 0) & (plant_df['temp'] <= 40)]
-
+        plant_df['temp'] >= 0) & (plant_df['temp'] <= 50)]
     return plant_df
 
 
@@ -137,6 +135,6 @@ if __name__ == "__main__":
     start_time = time.time()
     load_dotenv()
     plants = asyncio.run(get_all_plants(51))
+
     df = transform(plants)
-    print(df)
     print(f"--- {(time.time() - start_time)} seconds taken ---")

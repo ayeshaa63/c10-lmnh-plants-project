@@ -10,7 +10,7 @@ resource "aws_s3_bucket" "s3-test" {
 
 resource "aws_lambda_function" "alpha-storage-lambda" {
   function_name = "alpha-storage-lambda"
-  image_uri     = var.STORAGE_IMAGE_LOCATION
+  image_uri     = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c10-late-devonian-storage:latest"
   package_type  = "Image"
   role          = "arn:aws:iam::129033205317:role/service-role/c10-late-devonian-etl-lambda-role-ne686ivv"
   timeout = 60

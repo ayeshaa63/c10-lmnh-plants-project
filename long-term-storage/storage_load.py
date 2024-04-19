@@ -52,7 +52,7 @@ def del_recent_recordings(conn: Connection, config) -> None:
 
 
 def create_current_datetime_key(current_timestamp: str) -> str:
-    """Given the current timestamp, a CSV filename is created."""
+    """Given the current timestamp, a filename is created."""
     current_yr = current_timestamp.year
     current_mth = current_timestamp.month
     current_day = current_timestamp.day
