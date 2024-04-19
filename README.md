@@ -1,27 +1,66 @@
 # c10-lmnh-plants-project
 
-## ETL Scripts
 
-### extract.py
-
-Extracts the data which is in JSON form, from an API endpoint and loads it into a pandas dataframe. The dataframe is passed to extract.py
-
-### transform.py
-
-Cleans and normalises the data within the passed in dataframe. The dataframe is passed to transform.py.
-
-### load.py
-
-Uploads a passed in dataframe to the Microsoft SQL Server database.
+## Requirements
 
 
-## Long Term Storage Loading
+To install requirements, if you want to run the scripts manually, run this command line in the root of the directory within a virtual environment:
+```sh
+pip3 install -r requirements.txt
+```
+The following are all the requirements for all the scripts to run within the project:
+```sh
+pandas
+python-dotenv
+pymssql
+pytest
+pylint
+pytest-mock
+requests-mock
+aiohttp
+boto3
+```
 
-## storage_load.py
+## Directories
 
-Moves any row that is more than 24 hours old from the Microsoft SQL Server database short term storage to an S3 Bucket for long term storage.
+### etl-script
+
+{INFO ABOUT ETL SCRIPTS HERE}
 
 
-## Unit Testing
+### long-term-storage
 
-*/test-*.py
+{INFO}
+
+### schema
+
+{INFO}
+
+### terraform
+
+{INFO}
+
+## Useful scripts
+
+### activate_venv.sh
+
+Easily build and enter a venv with
+```sh
+bash activate_venv.sh
+```
+
+### connect_to_db.sh
+
+The following env variables must be accessible to the script:
+```sh
+DB_HOST
+DB_NAME
+DB_USER
+DB_PASS
+DB_PORT
+```
+
+Then easily connect to the database with
+```sh
+bash connect_to_db.sh
+```
