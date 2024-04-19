@@ -16,36 +16,12 @@ DB_PORT
 SCHEMA_NAME
 ```
 
-## Requirements
-
-
-To install requirements, if you want to run the scripts manually, run this command line in the root of the directory within a virtual environment:
-```sh
-pip3 install -r requirements.txt
-```
-The following are all the requirements for all the scripts to run within the project:
-```sh
-pandas
-python-dotenv
-pymssql
-pytest
-pylint
-pytest-mock
-requests-mock
-aiohttp
-boto3
-```
 
 ## Usage
 
 To manually run the ETL Pipeline use the command:
 ```sh
 python3 load.py
-```
-
-To manually run the Long Term Storage script use the command:
-```sh
-python3 storage_load.py
 ```
 
 ## Dockerfile
