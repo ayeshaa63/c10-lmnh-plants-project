@@ -4,7 +4,7 @@ import pytest
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
-from transform import get_phone_number, recording_information, transform
+from transform import get_phone_number, recording_information, transform, clean
 
 
 @pytest.mark.parametrize("test_input,expected",
@@ -85,14 +85,68 @@ def test_transform(test_single_full_json,
 
 
 def test_transform_empty():
+    """test transform with an empty list"""
     actual_outcome = transform([])
 
     assert isinstance(actual_outcome, pd.DataFrame)
 
 
 def test_transform_error(test_single_full_json, ):
+    """test transform with an error value """
     actual_outcome = transform(
         [{'error': 'Cannot connect to the API.'}, test_single_full_json])
 
     assert isinstance(actual_outcome, pd.DataFrame)
     assert len(actual_outcome.index) == 1
+
+
+def test_clean_negative_moisture():
+    """Test that any plants with a erroneously negative soil moisture dont get through"""
+
+    test_data = [{'last_watered': 'Mon, 15 Apr 2024 14:03:04 GMT', 'timestamp': '2024-04-16 08:22:43',
+                 'phone': '(146)994163535992', 'soil_moisture': -3.4566, 'temp': 22.187149686325654}]
+    test_data = pd.DataFrame(test_data)
+
+    actual_outcome = clean(test_data)
+
+    assert isinstance(actual_outcome, pd.DataFrame)
+    assert len(actual_outcome.index) == 0
+
+
+def test_clean_negative_temp():
+    """Test that any plants with a erroneously negative temperatures dont get through"""
+
+    test_data = [{'last_watered': 'Mon, 15 Apr 2024 14:03:04 GMT', 'timestamp': '2024-04-16 08:22:43',
+                 'phone': '(146)994163535992', 'soil_moisture': 3.4566, 'temp': -22.187149686325654}]
+    test_data = pd.DataFrame(test_data)
+
+    actual_outcome = clean(test_data)
+
+    assert isinstance(actual_outcome, pd.DataFrame)
+    assert len(actual_outcome.index) == 0
+
+
+def test_clean_high_moisture():
+    """Test that any plants with a erroneously high soil moisture dont get through"""
+
+    test_data = [{'last_watered': 'Mon, 15 Apr 2024 14:03:04 GMT', 'timestamp': '2024-04-16 08:22:43',
+                 'phone': '(146)994163535992', 'soil_moisture': 63.4566, 'temp': 22.187149686325654}]
+    test_data = pd.DataFrame(test_data)
+
+    actual_outcome = clean(test_data)
+
+    assert isinstance(actual_outcome, pd.DataFrame)
+    assert len(actual_outcome.index) == 0
+
+
+def test_clean_high_temp():
+    """Test that any plants with a erroneously high temperature dont get through"""
+
+    test_data = [{'last_watered': 'Mon, 15 Apr 2024 14:03:04 GMT', 'timestamp': '2024-04-16 08:22:43',
+                 'phone': '(146)994163535992', 'soil_moisture': 33.4566, 'temp': 55.187149686325654}]
+    test_data = pd.DataFrame(test_data)
+
+    actual_outcome = clean(test_data)
+
+    assert isinstance(actual_outcome, pd.DataFrame)
+    assert len(actual_outcome.index) == 0

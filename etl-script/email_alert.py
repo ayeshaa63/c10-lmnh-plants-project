@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 
 def create_message(sensor_failures: list[str]) -> str:
+    """Creates the message for emails"""
 
     message = """<h1 style="font-weight: bold;text-decoration: underline;">Sensor Failures</h1>"""
     for failure in sensor_failures:
@@ -19,6 +20,7 @@ def create_message(sensor_failures: list[str]) -> str:
 
 
 def get_to_emails():
+    """gets the emails of the recipients and in this case us"""
 
     nathan_email = ENV['NATHAN_EMAIL']
     dana_email = ENV['DANA_EMAIL']
