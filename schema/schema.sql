@@ -23,8 +23,8 @@ CREATE TABLE s_alpha.country(
 
 CREATE TABLE s_alpha.origin(
     origin_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
-    long FLOAT NOT NULL,
     lat FLOAT NOT NULL,
+    long FLOAT NOT NULL,
     location_name VARCHAR(30) NOT NULL,
     country_id SMALLINT NOT NULL,
     FOREIGN KEY(country_id) REFERENCES s_alpha.country(country_id)

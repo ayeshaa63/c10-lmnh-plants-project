@@ -23,7 +23,7 @@ def connect_to_db(config) -> Connection:
     )
 
 
-def get_recent_recordings(conn: Connection, config) -> pd.DataFrame:
+def get_old_recordings(conn: Connection, config) -> pd.DataFrame:
     """Goes into database, and pulls all entries in the recording table with a timestamp
     older than 24 hours."""
     with conn.cursor() as cur:
@@ -39,7 +39,7 @@ def get_recent_recordings(conn: Connection, config) -> pd.DataFrame:
     return pd.DataFrame(result)
 
 
-def del_recent_recordings(conn: Connection, config) -> None:
+def del_old_recordings(conn: Connection, config) -> None:
     """Goes into database, and deletes all entries in the recording table with a timestamp
     older than 24 hours."""
     with conn.cursor() as cur:
@@ -82,9 +82,9 @@ def handler(event=None, context=None) -> None:
 
     conn = connect_to_db(ENV)
 
-    old_recordings = get_recent_recordings(conn, ENV)
+    old_recordings = get_old_recordings(conn, ENV)
 
-    del_recent_recordings(conn, ENV)
+    del_old_recordings(conn, ENV)
 
     csv = f"{create_current_datetime_key(current_timestamp)}.csv"
 
@@ -107,9 +107,9 @@ if __name__ == "__main__":
 
     conn = connect_to_db(ENV)
 
-    old_recordings = get_recent_recordings(conn, ENV)
+    old_recordings = get_old_recordings(conn, ENV)
 
-    del_recent_recordings(conn, ENV)
+    del_old_recordings(conn, ENV)
 
     csv = f"{create_current_datetime_key(current_timestamp)}.csv"
 
