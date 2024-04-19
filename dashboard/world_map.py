@@ -38,10 +38,11 @@ def world_map(origin_data):
     countries = alt.topo_feature(data.world_110m.url, 'countries')
     background = alt.Chart(countries).mark_geoshape(
         fill='lightgray',
-        stroke='white'
+        stroke='white',
+        tooltip=None
     ).project('equirectangular').properties(
         width=500,
-        height=300
+        height=400
     )
     points = alt.Chart(origin_data).mark_circle(color='red', size=300).encode(
         longitude='lat:Q',
@@ -52,7 +53,7 @@ def world_map(origin_data):
         "equirectangular"
     ).properties(
         width=500,
-        height=300
+        height=400
     )
     return background + points
 
