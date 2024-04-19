@@ -110,8 +110,8 @@ if __name__ == "__main__":
         st.altair_chart(temps, use_container_width=True)
 
         moist = alt.Chart(basic_stats.loc[basic_stats['Plant'].isin(plant_list)], title='Soil moisture over time').mark_line().encode(
-            x='Time:T',
-            y='Soil Moisture:Q',
+            x='hour(Time):T',
+            y='Soil moisture:Q',
             color='Plant:N'
         )
 
