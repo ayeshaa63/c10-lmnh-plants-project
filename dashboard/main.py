@@ -86,7 +86,7 @@ if __name__ == "__main__":
 
         with st.sidebar:
             plant_list = st.multiselect(
-                'Plant ID', basic_stats['Plant'], basic_stats['Plant'])
+                'Plant ID', basic_stats['Plant'].unique(), basic_stats['Plant'].unique())
 
         st.write(basic_stats[basic_stats['Plant'].isin(plant_list)])
 
@@ -110,7 +110,7 @@ if __name__ == "__main__":
         st.altair_chart(temps, use_container_width=True)
 
         moist = alt.Chart(basic_stats.loc[basic_stats['Plant'].isin(plant_list)], title='Soil moisture over time').mark_line().encode(
-            x='hour(Time):T',
+            x='Time:T',
             y='Soil moisture:Q',
             color='Plant:N'
         )
