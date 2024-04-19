@@ -58,9 +58,9 @@ def get_table_data(conn, config) -> pd.DataFrame:
                     JOIN {config['SCHEMA_NAME']}.plant as p
                     ON (r.plant_id = p.plant_id)
                     WHERE 0 < r.temp
-                    AND r.temp < 40
+                    AND r.temp < 50
                     AND 0 < r.soil_moisture
-                    AND r.soil_moisture < 50;""")
+                    AND r.soil_moisture < 100;""")
 
         rows = cur.fetchall()
 
@@ -101,10 +101,16 @@ def get_sidebar(some_data):
     sorted = st.sidebar.checkbox('Sorted',
                                  False)
     with st.sidebar.expander('Filter by plant'):
-        plants = st.multiselect('Plants',
-                                some_data['Plant'].sort_values().unique(),
-                                default=some_data['Plant'].sort_values().unique())
-
+        all_options = st.checkbox("Start from all plants", True, True)
+        if all_options:
+            plants = st.multiselect('Plants',
+                                    some_data['Plant'].sort_values().unique(),
+                                    default=some_data['Plant'].sort_values(
+                                    ).unique())
+        else:
+            plants = st.multiselect('Plants',
+                                    some_data['Plant'].sort_values().unique(),
+                                    default=None)
     return plants, sorted
 
 
@@ -145,9 +151,8 @@ if __name__ == "__main__":
         st.altair_chart(avg_temp, use_container_width=True)
 
         # Temperature over time graph
-
         temps = alt.Chart(basic_stats[basic_stats['Plant'].isin(plant_list)], title='Temperature over time').mark_line().encode(
-            x='hours(Time):T',
+            x='hours(Time):O',
             y='mean(Temperature):Q',
             color='Plant:N',
             tooltip='Plant'
