@@ -104,7 +104,7 @@ def test_clean_negative_moisture():
     """Test that any plants with a erroneously negative soil moisture dont get through"""
 
     test_data = [{'last_watered': 'Mon, 15 Apr 2024 14:03:04 GMT', 'timestamp': '2024-04-16 08:22:43',
-                 'phone': '(146)994163535992', 'soil_moisture': -3.4566, 'temp': 22.187149686325654}]
+                 'phone': '(146)994163535992', 'soil_moisture': -0.4566, 'temp': 22.187149686325654}]
     test_data = pd.DataFrame(test_data)
 
     actual_outcome = clean(test_data)
@@ -117,7 +117,7 @@ def test_clean_negative_temp():
     """Test that any plants with a erroneously negative temperatures dont get through"""
 
     test_data = [{'last_watered': 'Mon, 15 Apr 2024 14:03:04 GMT', 'timestamp': '2024-04-16 08:22:43',
-                 'phone': '(146)994163535992', 'soil_moisture': 3.4566, 'temp': -22.187149686325654}]
+                 'phone': '(146)994163535992', 'soil_moisture': 3.4566, 'temp': -0.187149686325654}]
     test_data = pd.DataFrame(test_data)
 
     actual_outcome = clean(test_data)
@@ -130,7 +130,7 @@ def test_clean_high_moisture():
     """Test that any plants with a erroneously high soil moisture dont get through"""
 
     test_data = [{'last_watered': 'Mon, 15 Apr 2024 14:03:04 GMT', 'timestamp': '2024-04-16 08:22:43',
-                 'phone': '(146)994163535992', 'soil_moisture': 63.4566, 'temp': 22.187149686325654}]
+                 'phone': '(146)994163535992', 'soil_moisture': 101.4566, 'temp': 22.187149686325654}]
     test_data = pd.DataFrame(test_data)
 
     actual_outcome = clean(test_data)
