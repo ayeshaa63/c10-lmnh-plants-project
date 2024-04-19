@@ -86,14 +86,20 @@ if __name__ == "__main__":
         record_data = get_data_from_db(conn, ENV, 'recording')
         basic_stats = get_table_data(conn, ENV)
 
+        # Title
         st.title('LMNH Plants Dashboard')
 
+        # Sidebar
         with st.sidebar:
             plant_list = st.multiselect(
-                'Plant ID', basic_stats['Plant'].unique(), basic_stats['Plant'].unique())
+                'Plant Name', basic_stats['Plant'].unique(), basic_stats['Plant'].unique())
 
-        st.write(basic_stats[basic_stats['Plant'].isin(plant_list)])
+        # World Map
+        w_map = world_map(get_data_from_db(
+            connect_to_db(ENV), ENV, 'origin'))
+        st.altair_chart(w_map, use_container_width=True)
 
+        # Average temperatures graph
         average_temps = basic_stats.groupby(
             ['Plant'])['Temperature'].mean().reset_index()
 
@@ -103,7 +109,9 @@ if __name__ == "__main__":
             color='Plant:N'
         )
 
-        st.altair_chart(avg_temp)
+        st.altair_chart(avg_temp, use_container_width=True)
+
+        # Temperature over time graph
 
         temps = alt.Chart(basic_stats[basic_stats['Plant'].isin(plant_list)], title='Temperature over time').mark_line().encode(
             x='hours(Time):T',
@@ -113,6 +121,8 @@ if __name__ == "__main__":
 
         st.altair_chart(temps, use_container_width=True)
 
+        # Soil moisture over time graph
+
         moist = alt.Chart(basic_stats.loc[basic_stats['Plant'].isin(plant_list)], title='Soil moisture over time').mark_line().encode(
             x='hours(Time):T',
             y='mean(Soil moisture):Q',
@@ -121,6 +131,12 @@ if __name__ == "__main__":
 
         st.altair_chart(moist, use_container_width=True)
 
-        w_map = world_map(get_data_from_db(
-            connect_to_db(ENV), ENV, 'origin'))
-        st.altair_chart(w_map, use_container_width=True)
+        # All data in last 24 hours table
+
+        st.write(basic_stats[basic_stats['Plant'].isin(
+            plant_list)], use_container_width=True)
+
+        # left, right = st.columns(2)
+        # with left:
+
+        # with right:
