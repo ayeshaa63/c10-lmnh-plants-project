@@ -33,6 +33,22 @@ def get_data_from_db(conn, config, table_name) -> pd.DataFrame:
     return df
 
 
+def get_origin_data(conn, config) -> pd.DataFrame:
+    '''Returns a transactions as DataFrame from database.'''
+    with conn.cursor() as cur:
+
+        cur.execute(f"""SELECT p.name as Plant, o.location_name as Location, o.long, o.lat FROM {config['SCHEMA_NAME']}.origin AS o
+                    JOIN {config['SCHEMA_NAME']}.plant as p
+                    ON (p.origin_id=o.origin_id)
+                    """)
+
+        rows = cur.fetchall()
+
+        df = pd.DataFrame.from_dict(rows)
+
+    return df
+
+
 def get_table_data(conn, config) -> pd.DataFrame:
     '''Returns a transactions as DataFrame from database.'''
     with conn.cursor() as cur:
@@ -68,7 +84,7 @@ def world_map(origin_data):
         longitude='lat:Q',
         latitude='long:Q',
         size=alt.value(10),
-        tooltip='location_name'
+        tooltip=['Location', 'Plant']
     ).project(
         "equirectangular"
     ).properties(
@@ -107,8 +123,8 @@ if __name__ == "__main__":
         plant_list, sorted = get_sidebar(basic_stats)
 
         # World Map
-        w_map = world_map(get_data_from_db(
-            connect_to_db(ENV), ENV, 'origin'))
+        w_map = world_map(get_origin_data(
+            connect_to_db(ENV), ENV))
         st.altair_chart(w_map, use_container_width=True)
 
         # Average temperatures graph
