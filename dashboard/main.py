@@ -1,3 +1,5 @@
+"""A script to generate a dashboard about the LMNH plants."""
+
 from os import environ as ENV
 
 import altair as alt
@@ -21,41 +23,43 @@ def connect_to_db(config):
 
 
 def get_data_from_db(conn, config, table_name) -> pd.DataFrame:
-    '''Returns a transactions as DataFrame from database.'''
+    '''Returns data as DataFrame from database.'''
     with conn.cursor() as cur:
 
         cur.execute(f"SELECT * FROM {config['SCHEMA_NAME']}.{table_name};")
 
         rows = cur.fetchall()
 
-        df = pd.DataFrame.from_dict(rows)
+        data_f = pd.DataFrame.from_dict(rows)
 
-    return df
+    return data_f
 
 
 def get_origin_data(conn, config) -> pd.DataFrame:
-    '''Returns a transactions as DataFrame from database.'''
+    '''Returns origin data as DataFrame from database.'''
     with conn.cursor() as cur:
 
-        cur.execute(f"""SELECT p.name as Plant, o.location_name as Location, o.long, o.lat FROM {config['SCHEMA_NAME']}.origin AS o
+        cur.execute(f"""SELECT p.name as Plant, o.location_name as Location, o.long, o.lat
+                    FROM {config['SCHEMA_NAME']}.origin AS o
                     JOIN {config['SCHEMA_NAME']}.plant as p
                     ON (p.origin_id=o.origin_id)
                     """)
 
         rows = cur.fetchall()
 
-        df = pd.DataFrame.from_dict(rows)
+        data_f = pd.DataFrame.from_dict(rows)
 
-    return df
+    return data_f
 
 
 def get_table_data(conn, config) -> pd.DataFrame:
-    '''Returns a transactions as DataFrame from database.'''
+    '''Returns a recordings as DataFrame from database.'''
     with conn.cursor() as cur:
 
-        cur.execute(f"""SELECT p.name as 'Plant', r.timestamp as 'Time', r.temp as 'Temperature', r.soil_moisture as 'Soil moisture'
-                    FROM {config['SCHEMA_NAME']}.recording as r
-                    JOIN {config['SCHEMA_NAME']}.plant as p
+        cur.execute(f"""SELECT p.name AS 'Plant', r.timestamp AS 'Time', r.temp AS 'Temperature',
+                    r.soil_moisture AS 'Soil moisture'
+                    FROM {config['SCHEMA_NAME']}.recording AS r
+                    JOIN {config['SCHEMA_NAME']}.plant AS p
                     ON (r.plant_id = p.plant_id)
                     WHERE 0 < r.temp
                     AND r.temp < 50
@@ -64,13 +68,13 @@ def get_table_data(conn, config) -> pd.DataFrame:
 
         rows = cur.fetchall()
 
-        df = pd.DataFrame.from_dict(rows)
+        data_f = pd.DataFrame.from_dict(rows)
 
-    return df
+    return data_f
 
 
 def world_map(origin_data):
-
+    """Generates a world map of where the plants originated from."""
     countries = alt.topo_feature(data.world_110m.url, 'countries')
     background = alt.Chart(countries).mark_geoshape(
         fill='lightgray',
@@ -98,8 +102,8 @@ def get_sidebar(some_data):
     """Set up streamlit sidebar with headers and filters."""
     st.sidebar.title('Filters')
     st.sidebar.subheader('Data analysis of plant conditions')
-    sorted = st.sidebar.checkbox('Sorted',
-                                 False)
+    sort_ed = st.sidebar.checkbox('Sorted',
+                                  False)
     with st.sidebar.expander('Filter by plant'):
         all_options = st.checkbox("Start from all plants", True, True)
         if all_options:
@@ -111,22 +115,22 @@ def get_sidebar(some_data):
             plants = st.multiselect('Plants',
                                     some_data['Plant'].sort_values().unique(),
                                     default=None)
-    return plants, sorted
+    return plants, sort_ed
 
 
 if __name__ == "__main__":
 
     load_dotenv()
 
-    with connect_to_db(ENV) as conn:
-        record_data = get_data_from_db(conn, ENV, 'recording')
-        basic_stats = get_table_data(conn, ENV)
+    with connect_to_db(ENV) as connection:
+        record_data = get_data_from_db(connection, ENV, 'recording')
+        basic_stats = get_table_data(connection, ENV)
 
         # Title
         st.title('LMNH Plants Dashboard')
 
         # Sidebar
-        plant_list, sorted = get_sidebar(basic_stats)
+        plant_list, sorted_plants = get_sidebar(basic_stats)
 
         # World Map
         w_map = world_map(get_origin_data(
@@ -137,12 +141,13 @@ if __name__ == "__main__":
         average_temps = basic_stats.groupby(
             ['Plant'])['Temperature'].mean().reset_index()
 
-        if sorted:
-            x_avg_temp = alt.X('Plant:N').sort('-y')
+        if sorted_plants:
+            X_AVG_TEMP = alt.X('Plant:N').sort('-y')
         else:
-            x_avg_temp = alt.X('Plant:N')
-        avg_temp = alt.Chart(average_temps[average_temps['Plant'].isin(plant_list)], title='Average Temperatures').mark_bar().encode(
-            x=x_avg_temp,
+            X_AVG_TEMP = alt.X('Plant:N')
+        avg_temp = alt.Chart(average_temps[average_temps['Plant'].isin(plant_list)],
+                             title='Average Temperatures').mark_bar().encode(
+            x=X_AVG_TEMP,
             y='Temperature',
             color='Plant:N',
             tooltip=['Plant', 'Temperature']
@@ -151,7 +156,8 @@ if __name__ == "__main__":
         st.altair_chart(avg_temp, use_container_width=True)
 
         # Temperature over time graph
-        temps = alt.Chart(basic_stats[basic_stats['Plant'].isin(plant_list)], title='Temperature over time').mark_line().encode(
+        temps = alt.Chart(basic_stats[basic_stats['Plant'].isin(plant_list)],
+                          title='Temperature over time').mark_line().encode(
             x='hours(Time):O',
             y='mean(Temperature):Q',
             color='Plant:N',
@@ -162,7 +168,8 @@ if __name__ == "__main__":
 
         # Soil moisture over time graph
 
-        moist = alt.Chart(basic_stats.loc[basic_stats['Plant'].isin(plant_list)], title='Soil moisture over time').mark_line().encode(
+        moist = alt.Chart(basic_stats.loc[basic_stats['Plant'].isin(plant_list)],
+                          title='Soil moisture over time').mark_line().encode(
             x='hours(Time):T',
             y='mean(Soil moisture):Q',
             color='Plant:N',
@@ -175,8 +182,3 @@ if __name__ == "__main__":
 
         st.write(basic_stats[basic_stats['Plant'].isin(
             plant_list)], use_container_width=True)
-
-        # left, right = st.columns(2)
-        # with left:
-
-        # with right:
