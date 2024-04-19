@@ -25,20 +25,45 @@ boto3
 
 ### etl-script
 
-{INFO ABOUT ETL SCRIPTS HERE}
+
+The directory requires a .env file to run which is not on github because of security reasons. There is a Dockerfile to create an image of the etl pipeline for use in a cloud container and to have one working version.
+
+The ETL script is contained here. The ETL pipeline is split into 3 scripts:
+```sh
+extract.py
+transform.py
+load.py
+```
+
+The ETL script has the ability to send emails upon Sensor Faults using the email_alert.py script linked to the transform.py.
+
+All scripts have corresponding unit test scripts which can be run using pytest. 
 
 
 ### long-term-storage
 
-{INFO}
+The directory requires a .env file to run which is not on github because of security reasons. There is a Dockerfile to create an image of the storage loading script pipeline for use in a cloud container and to have one working version.
+
+The short term to long term storage script is contained here:
+```sh
+storage_load.py
+```
+
+All scripts have corresponding unit test scripts which can be run using pytest. 
+
 
 ### schema
 
-{INFO}
+This directory contains the necessary tools to create, populate and delete the RDS Database. It uses Microsoft TSQL as the form of sql and has a python script to automatically fill the metadata into the database. The files are:
+```sh
+reset.sh
+schema.sql
+insert_metadata.py
+```
 
 ### terraform
 
-{INFO}
+This directory contains the necessary terraform files to build up the cloud services and tear them down again. They cover creating the Lambda functions, the event schedulers and the S3 bucket. All these elements are also linked where necessary.
 
 ## Useful scripts
 
