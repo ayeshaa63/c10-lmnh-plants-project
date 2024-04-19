@@ -1,5 +1,8 @@
 # c10-lmnh-plants-project
 
+## About
+
+Liverpool Natural History Museum has an array of sensors setup to monitor the health of a plant configured with a single, simple API endpoint that reports the current health of a plant. Our project's role is to take this data and upload it to a database so it can be displayed to LNHM employees through a dashboard for analysis. The database is used only as short term storage and anything older than 24 hours is moved to long term storage every hour. When there is any sensor failures, an email report is created and sent to recipients. The entire pipeline is hosted on AWS.
 
 ## Requirements
 
@@ -8,18 +11,7 @@ To install requirements, if you want to run the scripts manually, run this comma
 ```sh
 pip3 install -r requirements.txt
 ```
-The following are all the requirements for all the scripts to run within the project:
-```sh
-pandas
-python-dotenv
-pymssql
-pytest
-pylint
-pytest-mock
-requests-mock
-aiohttp
-boto3
-```
+
 
 ## Cloud Architecture and Project Structure
 
