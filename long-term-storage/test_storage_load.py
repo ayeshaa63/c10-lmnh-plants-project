@@ -9,15 +9,19 @@ from storage_load import create_current_datetime_key, get_old_recordings
 
 
 def test_create_current_datetime_key(sample_datetime1):
+    """Tests that the function gets the most recent time"""
     assert create_current_datetime_key(
         sample_datetime1) == "2000/11/29/14:48"
 
 
 def test_create_current_datetime_key_single_digit_entries(sample_datetime2):
+    """Tests that the function gets a time that is an edge case"""
     assert create_current_datetime_key(sample_datetime2) == "2000/1/1/00:00"
 
 
-def test_get_old_recordings(sample_datetime_older_than_24_hrs):
+
+def test_get_recent_recordings(sample_datetime_older_than_24_hrs):
+    """tests that the function gets the out of date recordings"""
 
     mock_connection = MagicMock()
 
