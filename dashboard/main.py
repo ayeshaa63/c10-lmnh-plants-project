@@ -40,7 +40,11 @@ def get_table_data(conn, config) -> pd.DataFrame:
         cur.execute(f"""SELECT p.name as 'Plant', r.timestamp as 'Time', r.temp as 'Temperature', r.soil_moisture as 'Soil moisture' 
                     FROM {config['SCHEMA_NAME']}.recording as r
                     JOIN {config['SCHEMA_NAME']}.plant as p
-                    ON (r.plant_id = p.plant_id);""")
+                    ON (r.plant_id = p.plant_id)
+                    WHERE 0 < r.temp
+                    AND r.temp < 40
+                    AND 0 < r.soil_moisture
+                    AND r.soil_moisture < 50;""")
 
         rows = cur.fetchall()
 
@@ -102,16 +106,16 @@ if __name__ == "__main__":
         st.altair_chart(avg_temp)
 
         temps = alt.Chart(basic_stats[basic_stats['Plant'].isin(plant_list)], title='Temperature over time').mark_line().encode(
-            x='Time:T',
-            y='Temperature:Q',
+            x='hours(Time):T',
+            y='mean(Temperature):Q',
             color='Plant:N'
         )
 
         st.altair_chart(temps, use_container_width=True)
 
         moist = alt.Chart(basic_stats.loc[basic_stats['Plant'].isin(plant_list)], title='Soil moisture over time').mark_line().encode(
-            x='Time:T',
-            y='Soil moisture:Q',
+            x='hours(Time):T',
+            y='mean(Soil moisture):Q',
             color='Plant:N'
         )
 
