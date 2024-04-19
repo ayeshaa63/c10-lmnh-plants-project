@@ -53,7 +53,7 @@ def get_table_data(conn, config) -> pd.DataFrame:
     '''Returns a transactions as DataFrame from database.'''
     with conn.cursor() as cur:
 
-        cur.execute(f"""SELECT p.name as 'Plant', r.timestamp as 'Time', r.temp as 'Temperature', r.soil_moisture as 'Soil moisture' 
+        cur.execute(f"""SELECT p.name as 'Plant', r.timestamp as 'Time', r.temp as 'Temperature', r.soil_moisture as 'Soil moisture'
                     FROM {config['SCHEMA_NAME']}.recording as r
                     JOIN {config['SCHEMA_NAME']}.plant as p
                     ON (r.plant_id = p.plant_id)
@@ -91,7 +91,7 @@ def world_map(origin_data):
         width=500,
         height=400
     )
-    return background + points
+    return alt.layer(background, points).properties(title='Plant origin map')
 
 
 def get_sidebar(some_data):
@@ -138,7 +138,8 @@ if __name__ == "__main__":
         avg_temp = alt.Chart(average_temps[average_temps['Plant'].isin(plant_list)], title='Average Temperatures').mark_bar().encode(
             x=x_avg_temp,
             y='Temperature',
-            color='Plant:N'
+            color='Plant:N',
+            tooltip=['Plant', 'Temperature']
         )
 
         st.altair_chart(avg_temp, use_container_width=True)
@@ -148,7 +149,8 @@ if __name__ == "__main__":
         temps = alt.Chart(basic_stats[basic_stats['Plant'].isin(plant_list)], title='Temperature over time').mark_line().encode(
             x='hours(Time):T',
             y='mean(Temperature):Q',
-            color='Plant:N'
+            color='Plant:N',
+            tooltip='Plant'
         )
 
         st.altair_chart(temps, use_container_width=True)
@@ -158,7 +160,8 @@ if __name__ == "__main__":
         moist = alt.Chart(basic_stats.loc[basic_stats['Plant'].isin(plant_list)], title='Soil moisture over time').mark_line().encode(
             x='hours(Time):T',
             y='mean(Soil moisture):Q',
-            color='Plant:N'
+            color='Plant:N',
+            tooltip=['Plant', 'mean(Soil moisture):Q']
         )
 
         st.altair_chart(moist, use_container_width=True)
