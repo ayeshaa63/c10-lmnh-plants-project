@@ -27,7 +27,17 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Caching dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-dependencies
+        with:
+          path: ~/cache/dependencies
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+  
       - name: Install dependencies
+        if: steps.cache-reqs.outputs.cache-hit != 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -51,11 +61,21 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Caching dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-dependencies
+        with:
+          path: ~/cache/dependencies
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+          
+
       - name: Install dependencies
+        if: steps.cache-reqs.outputs.cache-hit != 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run PyTest
         run: pytest -k "test"
-        
